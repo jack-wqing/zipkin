@@ -23,6 +23,10 @@ import org.jooq.exception.DataAccessException;
 
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 是否支持128位[32个16进制字符]
+ */
+
 final class HasTraceIdHigh {
   static final Logger LOG = Logger.getLogger(HasTraceIdHigh.class.getName());
   static final String MESSAGE =

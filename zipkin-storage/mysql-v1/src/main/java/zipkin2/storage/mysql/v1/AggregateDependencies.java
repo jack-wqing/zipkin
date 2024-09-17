@@ -30,6 +30,9 @@ import zipkin2.internal.DependencyLinker;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 实时统计数据
+ */
 final class AggregateDependencies implements Function<DSLContext, List<DependencyLink>> {
   final Schema schema;
   final long startTsBegin, startTsEnd;

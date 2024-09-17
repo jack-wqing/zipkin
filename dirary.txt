@@ -1,0 +1,31 @@
+1、node得版本: v14.15.3
+2、nvm可以管理多个版本
+3、安装指定版本:
+  NVM_NODEJS_ORG_MIRROR=https://mirrors.aliyun.com/nodejs-release nvm install v14.15.3
+
+4、打包操作
+  ./mvnw --batch-mode -DskipTests --also-make -pl zipkin-server clean install    //-q 只输出错误信息
+
+
+源码执行:
+  去掉gson得test
+        <dependency>
+           <groupId>com.google.code.gson</groupId>
+           <artifactId>gson</artifactId>
+           <version>${gson.version}</version>
+          <!-- <scope>test</scope>-->
+         </dependency>
+
+
+zipkin-api:
+  https://zipkin.io/zipkin-api/
+
+
+
+页面url说明:
+1、/config.json 获取ui查询的基本配置
+2、/api/v2/services  查询所有的服务
+3、/api/v2/autocompleteKeys 获取配置的可以动态添加查询的key
+4、/api/v2/traces 对trace进行检索
+5、/api/v2/dependencies 服务依赖图展示
+6、/api/v2/trace/{traceId}  查询带个trace

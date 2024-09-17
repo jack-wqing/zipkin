@@ -17,6 +17,9 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
+/**
+ * 页面配置
+ */
 @ConfigurationProperties("zipkin.ui")
 class ZipkinUiProperties {
   // TODO: this isn't honored in lens https://github.com/openzipkin/zipkin/issues/2519

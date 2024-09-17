@@ -38,6 +38,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * sql搜出批量插入的操作
+ */
 final class MySQLSpanConsumer implements SpanConsumer {
   static final byte[] ONE = {1};
 

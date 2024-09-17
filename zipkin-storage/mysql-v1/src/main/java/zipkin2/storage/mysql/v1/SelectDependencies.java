@@ -23,6 +23,9 @@ import zipkin2.internal.DependencyLinker;
 import static zipkin2.storage.mysql.v1.Schema.maybeGet;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinDependencies.ZIPKIN_DEPENDENCIES;
 
+/**
+ * 从预先统计的表中查询依赖数据
+ */
 final class SelectDependencies implements Function<DSLContext, List<DependencyLink>> {
   final Schema schema;
   final List<Long> epochDays;

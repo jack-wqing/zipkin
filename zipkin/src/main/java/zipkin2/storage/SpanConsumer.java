@@ -17,6 +17,9 @@ import java.util.List;
 import zipkin2.Call;
 import zipkin2.Span;
 
+/**
+ * 收集器收集的数据，进行存储的方式
+ */
 // @FunctionalInterface
 public interface SpanConsumer {
   Call<Void> accept(List<Span> spans);

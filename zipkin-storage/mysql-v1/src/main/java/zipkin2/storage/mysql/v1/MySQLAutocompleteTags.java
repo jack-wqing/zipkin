@@ -18,6 +18,9 @@ import java.util.List;
 import zipkin2.Call;
 import zipkin2.storage.AutocompleteTags;
 
+/**
+ * 自动可以通过指定的key集合查询数据表中所有的value
+ */
 final class MySQLAutocompleteTags implements AutocompleteTags {
   final DataSourceCall.Factory dataSourceCallFactory;
   final Schema schema;

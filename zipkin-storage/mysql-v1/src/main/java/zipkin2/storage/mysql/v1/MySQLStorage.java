@@ -35,6 +35,17 @@ import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotatio
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinDependencies.ZIPKIN_DEPENDENCIES;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * mysql StorageComponent需要实现:
+ *  收集: SpanConsumer
+ *  查询:
+ *   1、Traces
+ *   2、SpanStore
+ *   3、ServiceAndSpanNames
+ *   4、AutoCompleteTags
+ *
+ */
+
 public final class MySQLStorage extends StorageComponent {
   public static Builder newBuilder() {
     return new Builder();
@@ -48,17 +59,20 @@ public final class MySQLStorage extends StorageComponent {
     private Executor executor;
     List<String> autocompleteKeys = new ArrayList<>();
 
-    @Override public Builder strictTraceId(boolean strictTraceId) {
+    @Override
+    public Builder strictTraceId(boolean strictTraceId) {
       this.strictTraceId = strictTraceId;
       return this;
     }
 
-    @Override public Builder searchEnabled(boolean searchEnabled) {
+    @Override
+    public Builder searchEnabled(boolean searchEnabled) {
       this.searchEnabled = searchEnabled;
       return this;
     }
 
-    @Override public Builder autocompleteKeys(List<String> keys) {
+    @Override
+    public Builder autocompleteKeys(List<String> keys) {
       if (keys == null) throw new NullPointerException("keys == null");
       this.autocompleteKeys = keys;
       return this;
@@ -87,7 +101,8 @@ public final class MySQLStorage extends StorageComponent {
       return this;
     }
 
-    @Override public MySQLStorage build() {
+    @Override
+    public MySQLStorage build() {
       return new MySQLStorage(this);
     }
 
@@ -135,27 +150,33 @@ public final class MySQLStorage extends StorageComponent {
     return schema;
   }
 
-  @Override public SpanStore spanStore() {
+  @Override
+  public SpanStore spanStore() {
     return new MySQLSpanStore(this, schema());
   }
 
-  @Override public Traces traces() {
+  @Override
+  public Traces traces() {
     return (Traces) spanStore();
   }
 
-  @Override public ServiceAndSpanNames serviceAndSpanNames() {
+  @Override
+  public ServiceAndSpanNames serviceAndSpanNames() {
     return (ServiceAndSpanNames) spanStore();
   }
 
-  @Override public AutocompleteTags autocompleteTags() {
+  @Override
+  public AutocompleteTags autocompleteTags() {
     return new MySQLAutocompleteTags(this, schema());
   }
 
-  @Override public SpanConsumer spanConsumer() {
+  @Override
+  public SpanConsumer spanConsumer() {
     return new MySQLSpanConsumer(dataSourceCallFactory, schema());
   }
 
-  @Override public CheckResult check() {
+  @Override
+  public CheckResult check() {
     try (Connection conn = datasource.getConnection()) {
       context.get(conn).select(ZIPKIN_SPANS.TRACE_ID).from(ZIPKIN_SPANS).limit(1).execute();
     } catch (Throwable e) {
@@ -165,11 +186,13 @@ public final class MySQLStorage extends StorageComponent {
     return CheckResult.OK;
   }
 
-  @Override public final String toString() {
+  @Override
+  public final String toString() {
     return "MySQLStorage{datasource=" + datasource + "}";
   }
 
-  @Override public void close() {
+  @Override
+  public void close() {
     // didn't open the DataSource or executor
   }
 

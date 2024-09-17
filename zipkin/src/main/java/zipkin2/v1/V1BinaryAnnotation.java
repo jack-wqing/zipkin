@@ -25,6 +25,10 @@ import zipkin2.internal.Nullable;
  *
  * @deprecated new code should use {@link Span#tags()}.
  */
+
+/**
+ * v1版本的span V1BinaryAnnotation
+ */
 @Deprecated
 public final class V1BinaryAnnotation implements Comparable<V1BinaryAnnotation> {
   /** The defined in zipkin's thrift definition */

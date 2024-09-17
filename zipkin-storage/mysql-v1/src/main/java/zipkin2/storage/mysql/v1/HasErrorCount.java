@@ -23,6 +23,9 @@ import org.jooq.exception.DataAccessException;
 
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinDependencies.ZIPKIN_DEPENDENCIES;
 
+/**
+ * 判断zipkin_dependencies的 是否有ErrorCount
+ */
 final class HasErrorCount {
   private static final Logger LOG = Logger.getLogger(HasErrorCount.class.getName());
 

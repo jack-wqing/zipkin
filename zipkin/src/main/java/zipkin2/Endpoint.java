@@ -27,6 +27,10 @@ import zipkin2.internal.RecyclableBuffers;
 import static zipkin2.internal.HexCodec.HEX_DIGITS;
 
 /** The network context of a node in the service graph. */
+
+/**
+ * span中对本地和远程端点进行说明
+ */
 //@Immutable
 public final class Endpoint implements Serializable { // for Spark and Flink jobs
   private static final long serialVersionUID = 0L;

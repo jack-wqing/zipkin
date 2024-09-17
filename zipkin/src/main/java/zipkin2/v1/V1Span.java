@@ -32,6 +32,10 @@ import static zipkin2.internal.HexCodec.lowerHexToUnsignedLong;
  *
  * @deprecated new code should use {@link Span}.
  */
+
+/**
+ * 对旧数据得支持
+ */
 @Deprecated
 public final class V1Span {
   static final Endpoint EMPTY_ENDPOINT = Endpoint.newBuilder().build();

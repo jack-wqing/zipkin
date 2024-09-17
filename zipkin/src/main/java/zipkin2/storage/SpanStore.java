@@ -26,6 +26,10 @@ import zipkin2.internal.DependencyLinker;
  * <p>Note: This is not considered a user-level Api, rather an Spi that can be used to bind
  * user-level abstractions such as futures or observables.
  */
+
+/**
+ * span查询操作
+ */
 public interface SpanStore {
 
   /**

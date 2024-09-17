@@ -48,6 +48,10 @@ import static zipkin2.storage.mysql.v1.SelectAnnotationServiceNames.localService
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 执行真正地检索操作
+ *  封装 QueryRequest得请求
+ */
 abstract class SelectSpansAndAnnotations implements Function<DSLContext, List<Span>> {
   static final class Factory {
     final Schema schema;

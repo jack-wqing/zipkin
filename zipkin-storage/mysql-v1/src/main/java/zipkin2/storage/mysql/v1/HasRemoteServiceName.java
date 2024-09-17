@@ -23,6 +23,10 @@ import org.jooq.exception.DataAccessException;
 
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 判断zipkin_spans是否支持的remote_service_name查询
+ */
+
 final class HasRemoteServiceName {
   static final Logger LOG = Logger.getLogger(HasRemoteServiceName.class.getName());
   static final String MESSAGE =

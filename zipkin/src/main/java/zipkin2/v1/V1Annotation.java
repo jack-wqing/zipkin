@@ -24,6 +24,10 @@ import zipkin2.internal.Nullable;
  *
  * @deprecated new code should use {@link Annotation}.
  */
+
+/**
+ * v1Annotation
+ */
 @Deprecated
 public final class V1Annotation implements Comparable<V1Annotation> {
 

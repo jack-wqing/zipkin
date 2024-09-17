@@ -24,6 +24,10 @@ import zipkin2.Span;
  *
  * <p>This type isn't thread-safe: it re-uses state to avoid re-allocations in conversion loops.
  */
+
+/**
+ * v2 span 和 v1span 转换
+ */
 public final class V2SpanConverter {
 
   public static V2SpanConverter create() {

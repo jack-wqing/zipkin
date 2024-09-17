@@ -67,8 +67,7 @@ public class ZipkinQueryApiV2 {
 
   volatile int serviceCount; // used as a threshold to start returning cache-control headers
 
-  ZipkinQueryApiV2(
-    StorageComponent storage,
+  ZipkinQueryApiV2(StorageComponent storage,
     @Value("${zipkin.storage.type:mem}") String storageType,
     @Value("${zipkin.query.lookback:86400000}") long defaultLookback, // 1 day in millis
     @Value("${zipkin.query.names-max-age:300}") int namesMaxAge, // 5 minutes
@@ -81,6 +80,9 @@ public class ZipkinQueryApiV2 {
     this.autocompleteKeys = autocompleteKeys;
   }
 
+  /**
+   * 服务依赖图
+   */
   @Get("/api/v2/dependencies")
   @Blocking
   public AggregatedHttpResponse getDependencies(
@@ -91,6 +93,12 @@ public class ZipkinQueryApiV2 {
     return jsonResponse(DependencyLinkBytesEncoder.JSON_V1.encodeList(call.execute()));
   }
 
+  /**
+   * 查询满足条件的所有服务名
+   * @param ctx
+   * @return
+   * @throws IOException
+   */
   @Get("/api/v2/services")
   @Blocking
   public AggregatedHttpResponse getServiceNames(ServiceRequestContext ctx) throws IOException {
@@ -118,6 +126,9 @@ public class ZipkinQueryApiV2 {
     return maybeCacheNames(serviceCount > 3, remoteServiceNames, ctx.alloc());
   }
 
+  /**
+   * 对traces进行查询
+   */
   @Get("/api/v2/traces")
   @Blocking
   public AggregatedHttpResponse getTraces(
@@ -188,6 +199,11 @@ public class ZipkinQueryApiV2 {
       .setInt(HttpHeaderNames.CONTENT_LENGTH, body.length).build(), HttpData.wrap(body));
   }
 
+  /**
+   * 页面可以自动动态添加的key
+   * @param ctx
+   * @return
+   */
   @Get("/api/v2/autocompleteKeys")
   @Blocking
   public AggregatedHttpResponse getAutocompleteKeys(ServiceRequestContext ctx) {

@@ -23,6 +23,9 @@ import org.jooq.exception.DataAccessException;
 
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 
+/**
+ * 判断表 zipkin_annotations 是否支持ipv6
+ */
 final class HasIpv6 {
   private static final Logger LOG = Logger.getLogger(HasIpv6.class.getName());
 

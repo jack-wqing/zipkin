@@ -22,6 +22,9 @@ import zipkin2.v1.V1BinaryAnnotation;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 
+/**
+ * 自动指定key的所有的值
+ */
 final class SelectAutocompleteValues implements Function<DSLContext, List<String>> {
   final Schema schema;
   final String autocompleteKey;

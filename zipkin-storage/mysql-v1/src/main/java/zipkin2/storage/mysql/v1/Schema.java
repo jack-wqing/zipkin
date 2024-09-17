@@ -32,6 +32,9 @@ import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotatio
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinDependencies.ZIPKIN_DEPENDENCIES;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 数据库整体表记录
+ */
 final class Schema {
   final List<Field<?>> spanIdFields;
   final List<Field<?>> spanFields;

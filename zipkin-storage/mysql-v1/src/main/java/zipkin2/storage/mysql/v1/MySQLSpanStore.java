@@ -29,6 +29,9 @@ import zipkin2.storage.Traces;
 import static zipkin2.internal.DateUtil.epochDays;
 import static zipkin2.internal.HexCodec.lowerHexToUnsignedLong;
 
+/**
+ * SpanStore Sql实现
+ */
 final class MySQLSpanStore implements SpanStore, Traces, ServiceAndSpanNames {
 
   final DataSourceCall.Factory dataSourceCallFactory;

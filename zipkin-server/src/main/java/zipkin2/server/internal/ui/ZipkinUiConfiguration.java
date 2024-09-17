@@ -69,7 +69,8 @@ import static zipkin2.server.internal.ui.ZipkinUiProperties.DEFAULT_BASEPATH;
 @ConditionalOnProperty(name = "zipkin.ui.enabled", matchIfMissing = true)
 public class ZipkinUiConfiguration {
   @Autowired ZipkinUiProperties ui;
-  @Value("classpath:zipkin-lens/index.html") Resource lensIndexHtml;
+  @Value("classpath:zipkin-lens/index.html")
+  Resource lensIndexHtml;
 
   @Bean
   HttpService indexService() throws Exception {
@@ -78,10 +79,8 @@ public class ZipkinUiConfiguration {
     throw new BeanCreationException("Could not load Lens UI from " + lensIndexHtml);
   }
 
-  @Bean ArmeriaServerConfigurator uiServerConfigurator(
-    HttpService indexService,
-    Optional<MeterRegistry> meterRegistry
-  ) throws IOException {
+  @Bean
+  ArmeriaServerConfigurator uiServerConfigurator(HttpService indexService, Optional<MeterRegistry> meterRegistry) throws IOException {
     ServerCacheControl maxAgeYear =
       ServerCacheControl.builder().maxAgeSeconds(TimeUnit.DAYS.toSeconds(365)).build();
 

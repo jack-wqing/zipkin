@@ -22,11 +22,17 @@ import zipkin2.Component;
 import zipkin2.Span;
 import zipkin2.internal.TracesAdapter;
 
+
 /**
  * A component that provides storage interfaces used for spans and aggregations. Implementations are
  * free to provide other interfaces, but the ones declared here must be supported.
  *
  * @see InMemoryStorage
+ */
+
+/**
+ * 存储Plugins必须实现的接口
+ *
  */
 public abstract class StorageComponent extends Component {
 

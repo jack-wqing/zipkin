@@ -21,6 +21,9 @@ import static zipkin2.storage.mysql.v1.SelectAnnotationServiceNames.localService
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinAnnotations.ZIPKIN_ANNOTATIONS;
 import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinSpans.ZIPKIN_SPANS;
 
+/**
+ * 查询 remote Service Name
+ */
 final class SelectRemoteServiceNames implements Function<DSLContext, List<String>> {
   final Schema schema;
   final String serviceName;

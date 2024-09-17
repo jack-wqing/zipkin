@@ -28,6 +28,10 @@ import static zipkin2.storage.mysql.v1.internal.generated.tables.ZipkinDependenc
  * Returns true when the zipkin_dependencies table exists and has data in it, implying the spark job
  * has been run.
  */
+
+/**
+ * 判断zipkin_dependencies是否存在
+ */
 final class HasPreAggregatedDependencies {
   private static final Logger LOG = Logger.getLogger(HasPreAggregatedDependencies.class.getName());
 

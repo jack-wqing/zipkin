@@ -59,6 +59,10 @@ import static zipkin2.internal.HexCodec.HEX_DIGITS;
  * not need to repeat endpoints on each data like {@code zipkin.Span} does. This results in simpler
  * and smaller data.
  */
+
+/**
+ * zipkin得Span实现
+ */
 //@Immutable
 public final class Span implements Serializable { // for Spark and Flink jobs
   static final Charset UTF_8 = Charset.forName("UTF-8");
