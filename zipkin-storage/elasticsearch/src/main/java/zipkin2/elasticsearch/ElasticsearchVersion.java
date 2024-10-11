@@ -45,24 +45,28 @@ public final class ElasticsearchVersion implements Comparable<ElasticsearchVersi
     this.minor = minor;
   }
 
-  @Override public int compareTo(ElasticsearchVersion other) {
+  @Override
+  public int compareTo(ElasticsearchVersion other) {
     if (major < other.major) return -1;
     if (major > other.major) return 1;
     return Integer.compare(minor, other.minor);
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (o == this) return true;
     if (!(o instanceof ElasticsearchVersion)) return false;
     ElasticsearchVersion that = (ElasticsearchVersion) o;
     return this.major == that.major && this.minor == that.minor;
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return Objects.hash(major, minor);
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return major + "." + minor;
   }
 
