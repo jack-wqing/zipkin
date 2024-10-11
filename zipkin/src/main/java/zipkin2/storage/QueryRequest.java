@@ -41,7 +41,8 @@ public final class QueryRequest {
    *
    * @see ServiceAndSpanNames#getServiceNames()
    */
-  @Nullable public String serviceName() {
+  @Nullable
+  public String serviceName() {
     return serviceName;
   }
 
@@ -51,7 +52,8 @@ public final class QueryRequest {
    *
    * @see ServiceAndSpanNames#getRemoteServiceNames(String)
    */
-  @Nullable public String remoteServiceName() {
+  @Nullable
+  public String remoteServiceName() {
     return remoteServiceName;
   }
 
@@ -60,7 +62,8 @@ public final class QueryRequest {
    *
    * @see ServiceAndSpanNames#getSpanNames(String)
    */
-  @Nullable public String spanName() {
+  @Nullable
+  public String spanName() {
     return spanName;
   }
 
@@ -79,7 +82,8 @@ public final class QueryRequest {
    * Only return traces whose {@link Span#duration()} is greater than or equal to minDuration
    * microseconds.
    */
-  @Nullable public Long minDuration() {
+  @Nullable
+  public Long minDuration() {
     return minDuration;
   }
 
@@ -87,7 +91,8 @@ public final class QueryRequest {
    * Only return traces whose {@link Span#duration()} is less than or equal to maxDuration
    * microseconds. Only valid with {@link #minDuration}.
    */
-  @Nullable public Long maxDuration() {
+  @Nullable
+  public Long maxDuration() {
     return maxDuration;
   }
 
@@ -117,7 +122,8 @@ public final class QueryRequest {
    *
    * @see QueryRequest.Builder#parseAnnotationQuery(String)
    */
-  @Nullable public String annotationQueryString() {
+  @Nullable
+  public String annotationQueryString() {
     StringBuilder result = new StringBuilder();
 
     for (Iterator<Map.Entry<String, String>> i = annotationQuery().entrySet().iterator();
@@ -384,7 +390,8 @@ public final class QueryRequest {
     this.limit = limit;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     String result = "QueryRequest{";
     result += ("endTs=" + endTs + ", ");
     result += ("lookback=" + lookback + ", ");

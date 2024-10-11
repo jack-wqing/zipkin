@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.zipkin.zipkin2</groupId>
+    <artifactId>zipkin-storage-parent</artifactId>
+    <version>2.23.17</version>
+  </parent>
+
+  <artifactId>zipkin-storage-clickhouse</artifactId>
+  <name>Storage: clickhouse (V2)</name>
+
+  <properties>
+    <main.basedir>${project.basedir}/../..</main.basedir>
+
+    <!-- error-prone doesn't like generated code and it wants you to depend on guava! -->
+    <errorprone.args>-XepDisableWarningsInGeneratedCode -Xep:AutoValueImmutableFields:OFF -Xep:ExtendsAutoValue:OFF -Xep:AutoValueSubclassLeaked:OFF</errorprone.args>
+  </properties>
+
+
+  <dependencies>
+    <!-- 支持23 clickhouse版本以上 -->
+    <dependency>
+      <groupId>com.clickhouse</groupId>
+      <artifactId>clickhouse-jdbc</artifactId>
+      <version>0.6.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>14.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
+    </dependency>
+
+  </dependencies>
+
+</project>

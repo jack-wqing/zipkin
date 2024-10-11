@@ -71,8 +71,7 @@ public class ZipkinQueryApiV2 {
     @Value("${zipkin.storage.type:mem}") String storageType,
     @Value("${zipkin.query.lookback:86400000}") long defaultLookback, // 1 day in millis
     @Value("${zipkin.query.names-max-age:300}") int namesMaxAge, // 5 minutes
-    @Value("${zipkin.storage.autocomplete-keys:}") List<String> autocompleteKeys
-  ) {
+    @Value("${zipkin.storage.autocomplete-keys:}") List<String> autocompleteKeys) {
     this.storage = storage;
     this.storageType = storageType;
     this.defaultLookback = defaultLookback;
@@ -109,20 +108,15 @@ public class ZipkinQueryApiV2 {
 
   @Get("/api/v2/spans")
   @Blocking
-  public AggregatedHttpResponse getSpanNames(
-    @Param("serviceName") String serviceName, ServiceRequestContext ctx)
-    throws IOException {
+  public AggregatedHttpResponse getSpanNames(@Param("serviceName") String serviceName, ServiceRequestContext ctx) throws IOException {
     List<String> spanNames = storage.serviceAndSpanNames().getSpanNames(serviceName).execute();
     return maybeCacheNames(serviceCount > 3, spanNames, ctx.alloc());
   }
 
   @Get("/api/v2/remoteServices")
   @Blocking
-  public AggregatedHttpResponse getRemoteServiceNames(
-    @Param("serviceName") String serviceName, ServiceRequestContext ctx)
-    throws IOException {
-    List<String> remoteServiceNames =
-      storage.serviceAndSpanNames().getRemoteServiceNames(serviceName).execute();
+  public AggregatedHttpResponse getRemoteServiceNames(@Param("serviceName") String serviceName, ServiceRequestContext ctx) throws IOException {
+    List<String> remoteServiceNames = storage.serviceAndSpanNames().getRemoteServiceNames(serviceName).execute();
     return maybeCacheNames(serviceCount > 3, remoteServiceNames, ctx.alloc());
   }
 
@@ -140,8 +134,7 @@ public class ZipkinQueryApiV2 {
     @Param("maxDuration") Optional<Long> maxDuration,
     @Param("endTs") Optional<Long> endTs,
     @Param("lookback") Optional<Long> lookback,
-    @Default("10") @Param("limit") int limit)
-    throws IOException {
+    @Default("10") @Param("limit") int limit) throws IOException {
     QueryRequest queryRequest =
       QueryRequest.newBuilder()
         .serviceName(serviceName.orElse(null))

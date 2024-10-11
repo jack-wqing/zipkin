@@ -93,7 +93,7 @@ zipkin:
     autocomplete-keys: ${AUTOCOMPLETE_KEYS:}
     autocomplete-ttl: ${AUTOCOMPLETE_TTL:3600000}
     autocomplete-cardinality: 20000
-    type: ${STORAGE_TYPE:elasticsearch}
+    type: ${STORAGE_TYPE:clickhouse}
     throttle:
       enabled: ${STORAGE_THROTTLE_ENABLED:false}
       min-concurrency: ${STORAGE_THROTTLE_MIN_CONCURRENCY:10}
@@ -174,6 +174,15 @@ zipkin:
       db: ${MYSQL_DB:zipkin}
       max-active: ${MYSQL_MAX_CONNECTIONS:10}
       use-ssl: ${MYSQL_USE_SSL:false}
+    clickhouse:
+      url: jdbc:ch://10.98.51.166:8123,10.98.3.70:8123,10.98.9.152:8123
+      database: log
+      # span存储的表明
+      spanTable: zipkin_spans
+      traceTable: zipkin_spans_trace
+      # 需要服务名的时间窗口 1h
+      namesLookback: 3600000
+
   ui:
     enabled: ${QUERY_ENABLED:true}
     ## Values below here are mapped to ZipkinUiProperties, served as /config.json

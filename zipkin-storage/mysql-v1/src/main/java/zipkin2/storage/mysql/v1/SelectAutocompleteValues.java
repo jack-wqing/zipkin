@@ -34,7 +34,8 @@ final class SelectAutocompleteValues implements Function<DSLContext, List<String
     this.autocompleteKey = autocompleteKey;
   }
 
-  @Override public List<String> apply(DSLContext context) {
+  @Override
+  public List<String> apply(DSLContext context) {
     return context.selectDistinct(ZIPKIN_ANNOTATIONS.A_VALUE)
       .from(ZIPKIN_ANNOTATIONS)
       .where(ZIPKIN_ANNOTATIONS.A_TYPE.eq(V1BinaryAnnotation.TYPE_STRING)

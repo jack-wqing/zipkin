@@ -45,7 +45,8 @@ import zipkin2.storage.StorageComponent;
 })
 public class ZipkinConfiguration {
 
-  @Bean CollectorSampler traceIdSampler(@Value("${zipkin.collector.sample-rate:1.0}") float rate) {
+  @Bean
+  CollectorSampler traceIdSampler(@Value("${zipkin.collector.sample-rate:1.0}") float rate) {
     return CollectorSampler.create(rate);
   }
 

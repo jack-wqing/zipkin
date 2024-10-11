@@ -47,9 +47,11 @@ public final class SpanNode {
   }
 
   /** Set via {@link #addChild(SpanNode)} */
-  @Nullable SpanNode parent;
+  @Nullable
+  SpanNode parent;
   /** Null when a synthetic root node */
-  @Nullable Span span;
+  @Nullable
+  Span span;
   /** mutable to avoid allocating lists for childless nodes */
   List<SpanNode> children = Collections.emptyList();
 
@@ -58,12 +60,14 @@ public final class SpanNode {
   }
 
   /** Returns the parent, or null if root */
-  @Nullable public SpanNode parent() {
+  @Nullable
+  public SpanNode parent() {
     return parent;
   }
 
   /** Returns the span, or null if a synthetic root node */
-  @Nullable public Span span() {
+  @Nullable
+  public Span span() {
     return span;
   }
 

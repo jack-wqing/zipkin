@@ -32,9 +32,12 @@ import zipkin2.server.internal.ConditionalOnSelfTracing;
 @ConditionalOnProperty(name = "zipkin.storage.type", havingValue = "mysql")
 class ZipkinSelfTracingMySQLStorageConfiguration extends DefaultExecuteListener {
 
-  @Autowired ZipkinMySQLStorageProperties mysql;
-  @Autowired CurrentTraceContext currentTraceContext;
-  @Autowired ThreadLocalSpan threadLocalSpan;
+  @Autowired
+  ZipkinMySQLStorageProperties mysql;
+  @Autowired
+  CurrentTraceContext currentTraceContext;
+  @Autowired
+  ThreadLocalSpan threadLocalSpan;
 
   @Bean ExecuteListenerProvider mysqlListener() {
     return new DefaultExecuteListenerProvider(this);
@@ -61,7 +64,8 @@ class ZipkinSelfTracingMySQLStorageConfiguration extends DefaultExecuteListener 
     return new TracingCurrentRequestContextExecutor();
   }
 
-  @Override public void renderEnd(ExecuteContext ctx) {
+  @Override
+  public void renderEnd(ExecuteContext ctx) {
     // don't start new traces (to prevent amplifying writes to local storage)
     if (currentTraceContext.get() == null) return;
 
@@ -78,7 +82,8 @@ class ZipkinSelfTracingMySQLStorageConfiguration extends DefaultExecuteListener 
     span.start();
   }
 
-  @Override public void executeEnd(ExecuteContext ctx) {
+  @Override
+  public void executeEnd(ExecuteContext ctx) {
     Span span = ThreadLocalSpan.CURRENT_TRACER.remove();
     if (span == null || span.isNoop()) return;
     if (ctx.sqlException() != null) span.error(ctx.sqlException());

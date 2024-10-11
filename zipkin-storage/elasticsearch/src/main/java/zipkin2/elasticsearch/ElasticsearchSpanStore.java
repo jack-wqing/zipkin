@@ -164,11 +164,13 @@ final class ElasticsearchSpanStore implements SpanStore, Traces, ServiceAndSpanN
     return search.newCall(request, BodyConverters.KEYS);
   }
 
-  @Override public Call<List<String>> getRemoteServiceNames(String serviceName) {
+  @Override
+  public Call<List<String>> getRemoteServiceNames(String serviceName) {
     return aggregatedFieldByServiceName(serviceName, "remoteEndpoint.serviceName");
   }
 
-  @Override public Call<List<String>> getSpanNames(String serviceName) {
+  @Override
+  public Call<List<String>> getSpanNames(String serviceName) {
     return aggregatedFieldByServiceName(serviceName, "name");
   }
 

@@ -13,9 +13,6 @@
  */
 package zipkin2.storage.mysql.v1;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import zipkin2.Call;
 import zipkin2.DependencyLink;
 import zipkin2.Span;
@@ -25,6 +22,10 @@ import zipkin2.storage.ServiceAndSpanNames;
 import zipkin2.storage.SpanStore;
 import zipkin2.storage.StrictTraceId;
 import zipkin2.storage.Traces;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static zipkin2.internal.DateUtil.epochDays;
 import static zipkin2.internal.HexCodec.lowerHexToUnsignedLong;
@@ -97,24 +98,28 @@ final class MySQLSpanStore implements SpanStore, Traces, ServiceAndSpanNames {
     return strictTraceId ? result.map(StrictTraceId.filterTraces(normalizedTraceIds)) : result;
   }
 
-  @Override public Call<List<String>> getServiceNames() {
+  @Override
+  public Call<List<String>> getServiceNames() {
     if (!searchEnabled) return Call.emptyList();
     return getServiceNamesCall.clone();
   }
 
-  @Override public Call<List<String>> getRemoteServiceNames(String serviceName) {
+  @Override
+  public Call<List<String>> getRemoteServiceNames(String serviceName) {
     if (serviceName.isEmpty() || !searchEnabled || !schema.hasRemoteServiceName) {
       return Call.emptyList();
     }
     return dataSourceCallFactory.create(new SelectRemoteServiceNames(schema, serviceName));
   }
 
-  @Override public Call<List<String>> getSpanNames(String serviceName) {
+  @Override
+  public Call<List<String>> getSpanNames(String serviceName) {
     if (serviceName.isEmpty() || !searchEnabled) return Call.emptyList();
     return dataSourceCallFactory.create(new SelectSpanNames(schema, serviceName));
   }
 
-  @Override public Call<List<DependencyLink>> getDependencies(long endTs, long lookback) {
+  @Override
+  public Call<List<DependencyLink>> getDependencies(long endTs, long lookback) {
     if (endTs <= 0) throw new IllegalArgumentException("endTs <= 0");
     if (lookback <= 0) throw new IllegalArgumentException("lookback <= 0");
 

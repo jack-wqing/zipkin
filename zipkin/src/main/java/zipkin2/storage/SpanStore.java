@@ -52,7 +52,8 @@ public interface SpanStore {
    * @param traceId the {@link Span#traceId() trace ID}
    * @deprecated use {@link Traces#getTrace(String)}
    */
-  @Deprecated Call<List<Span>> getTrace(String traceId);
+  @Deprecated
+  Call<List<Span>> getTrace(String traceId);
 
   /**
    * Retrieves all {@link Span#localEndpoint() local} and {@link Span#remoteEndpoint() remote}
@@ -60,7 +61,8 @@ public interface SpanStore {
    *
    * @deprecated use {@link ServiceAndSpanNames#getServiceNames()}
    */
-  @Deprecated Call<List<String>> getServiceNames();
+  @Deprecated
+  Call<List<String>> getServiceNames();
 
   /**
    * Retrieves all {@link Span#name() span names} recorded by a {@link Span#localEndpoint()
@@ -68,7 +70,8 @@ public interface SpanStore {
    *
    * @deprecated use {@link ServiceAndSpanNames#getSpanNames(String)}
    */
-  @Deprecated Call<List<String>> getSpanNames(String serviceName);
+  @Deprecated
+  Call<List<String>> getSpanNames(String serviceName);
 
   /**
    * Returns dependency links derived from spans in an interval contained by (endTs - lookback) or

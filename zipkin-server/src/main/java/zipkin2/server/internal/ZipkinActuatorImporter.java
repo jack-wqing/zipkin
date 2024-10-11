@@ -40,8 +40,7 @@ public final class ZipkinActuatorImporter
   implements ApplicationContextInitializer<GenericApplicationContext> {
   static final Logger LOG = LoggerFactory.getLogger(ZipkinActuatorImporter.class);
 
-  static final String ACTUATOR_IMPL_CLASS =
-    "com.linecorp.armeria.spring.actuate.ArmeriaSpringActuatorAutoConfiguration";
+  static final String ACTUATOR_IMPL_CLASS = "com.linecorp.armeria.spring.actuate.ArmeriaSpringActuatorAutoConfiguration";
   static final String PROPERTY_NAME_ACTUATOR_ENABLED = "zipkin.internal.actuator.enabled";
   static final String PROPERTY_NAME_ACTUATOR_INCLUDE = "zipkin.internal.actuator.include";
 

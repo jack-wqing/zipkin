@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Import;
 import zipkin2.server.internal.activemq.ZipkinActiveMQCollectorConfiguration;
 import zipkin2.server.internal.brave.ZipkinSelfTracingConfiguration;
 import zipkin2.server.internal.cassandra3.ZipkinCassandra3StorageConfiguration;
+import zipkin2.server.internal.clickhouse.ZipkinClickHouseStorageConfiguration;
 import zipkin2.server.internal.elasticsearch.ZipkinElasticsearchStorageConfiguration;
 import zipkin2.server.internal.health.ZipkinHealthController;
 import zipkin2.server.internal.kafka.ZipkinKafkaCollectorConfiguration;
@@ -36,6 +37,7 @@ import zipkin2.server.internal.ui.ZipkinUiConfiguration;
   ZipkinCassandra3StorageConfiguration.class,
   ZipkinElasticsearchStorageConfiguration.class,
   ZipkinMySQLStorageConfiguration.class,
+  ZipkinClickHouseStorageConfiguration.class,
   ZipkinScribeCollectorConfiguration.class,
   ZipkinSelfTracingConfiguration.class,
   ZipkinQueryApiV2.class,

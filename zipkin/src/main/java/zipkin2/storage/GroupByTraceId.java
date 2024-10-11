@@ -39,7 +39,9 @@ public final class GroupByTraceId implements Call.Mapper<List<Span>, List<List<S
   }
 
   @SuppressWarnings("MixedMutabilityReturnType")
-  @Override public List<List<Span>> map(List<Span> input) {
+  @Override
+  public List<List<Span>> map(List<Span> input) {
+
     if (input.isEmpty()) return Collections.emptyList();
 
     Map<String, List<Span>> groupedByTraceId = new LinkedHashMap<String, List<Span>>();
@@ -55,7 +57,8 @@ public final class GroupByTraceId implements Call.Mapper<List<Span>, List<List<S
     return new ArrayList<List<Span>>(groupedByTraceId.values());
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "GroupByTraceId{strictTraceId=" + strictTraceId + "}";
   }
 }

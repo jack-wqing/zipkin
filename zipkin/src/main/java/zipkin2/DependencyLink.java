@@ -108,7 +108,8 @@ public final class DependencyLink implements Serializable { // for Spark and Fli
     }
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return new String(DependencyLinkBytesEncoder.JSON_V1.encode(this), UTF_8);
   }
 
@@ -124,7 +125,8 @@ public final class DependencyLink implements Serializable { // for Spark and Fli
     errorCount = builder.errorCount;
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (o == this) return true;
     if (!(o instanceof DependencyLink)) return false;
     DependencyLink that = (DependencyLink) o;
@@ -134,7 +136,8 @@ public final class DependencyLink implements Serializable { // for Spark and Fli
       && errorCount == that.errorCount;
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     int h = 1;
     h *= 1000003;
     h ^= parent.hashCode();

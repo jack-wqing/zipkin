@@ -48,7 +48,8 @@ public final class ZipkinModuleImporter implements ApplicationContextInitializer
 
   static final String PROPERTY_NAME_MODULE = "zipkin.internal.module";
 
-  @Override public void initialize(GenericApplicationContext context) {
+  @Override
+  public void initialize(GenericApplicationContext context) {
     ConfigurableEnvironment env = context.getEnvironment();
 
     // At this point in the life-cycle, env can directly resolve plain properties, like the boolean

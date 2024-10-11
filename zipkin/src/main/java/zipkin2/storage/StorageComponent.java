@@ -44,15 +44,18 @@ public abstract class StorageComponent extends Component {
 
   public AutocompleteTags autocompleteTags() { // returns default to not break compat
     return new AutocompleteTags() {
-      @Override public Call<List<String>> getKeys() {
+      @Override
+      public Call<List<String>> getKeys() {
         return Call.emptyList();
       }
 
-      @Override public Call<List<String>> getValues(String key) {
+      @Override
+      public Call<List<String>> getValues(String key) {
         return Call.emptyList();
       }
 
-      @Override public String toString() {
+      @Override
+      public String toString() {
         return "EmptyAutocompleteTags{}";
       }
     };
@@ -61,19 +64,23 @@ public abstract class StorageComponent extends Component {
   public ServiceAndSpanNames serviceAndSpanNames() { // delegates to deprecated methods.
     final SpanStore delegate = spanStore();
     return new ServiceAndSpanNames() {
-      @Override public Call<List<String>> getServiceNames() {
+      @Override
+      public Call<List<String>> getServiceNames() {
         return delegate.getServiceNames();
       }
 
-      @Override public Call<List<String>> getRemoteServiceNames(String serviceName) {
+      @Override
+      public Call<List<String>> getRemoteServiceNames(String serviceName) {
         return Call.emptyList(); // incorrect for not yet ported 3rd party storage components.
       }
 
-      @Override public Call<List<String>> getSpanNames(String serviceName) {
+      @Override
+      public Call<List<String>> getSpanNames(String serviceName) {
         return delegate.getSpanNames(serviceName);
       }
 
-      @Override public String toString() {
+      @Override
+      public String toString() {
         return "ServiceAndSpanNames{" + delegate + "}";
       }
     };

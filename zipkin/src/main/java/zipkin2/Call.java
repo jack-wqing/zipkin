@@ -233,13 +233,16 @@ public abstract class Call<V> implements Cloneable {
       this.delegate = delegate;
     }
 
-    @Override protected R doExecute() throws IOException {
+    @Override
+    protected R doExecute() throws IOException {
       return mapper.map(delegate.execute());
     }
 
-    @Override protected void doEnqueue(final Callback<R> callback) {
+    @Override
+    protected void doEnqueue(final Callback<R> callback) {
       delegate.enqueue(new Callback<V>() {
-        @Override public void onSuccess(V value) {
+        @Override
+        public void onSuccess(V value) {
           try {
             callback.onSuccess(mapper.map(value));
           } catch (Throwable t) {
@@ -247,17 +250,20 @@ public abstract class Call<V> implements Cloneable {
           }
         }
 
-        @Override public void onError(Throwable t) {
+        @Override
+        public void onError(Throwable t) {
           callback.onError(t);
         }
       });
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
       return "Mapping{call=" + delegate + ", mapper=" + mapper + "}";
     }
 
-    @Override public Call<R> clone() {
+    @Override
+    public Call<R> clone() {
       return new Mapping<R, V>(mapper, delegate.clone());
     }
   }
@@ -367,7 +373,8 @@ public abstract class Call<V> implements Cloneable {
       return "ErrorHandling{call=" + delegate + ", errorHandler=" + errorHandler + "}";
     }
 
-    @Override public Call<V> clone() {
+    @Override
+    public Call<V> clone() {
       return new ErrorHandling<V>(errorHandler, delegate.clone());
     }
   }
@@ -379,7 +386,8 @@ public abstract class Call<V> implements Cloneable {
     protected Base() {
     }
 
-    @Override public final V execute() throws IOException {
+    @Override
+    public final V execute() throws IOException {
       synchronized (this) {
         if (this.executed) throw new IllegalStateException("Already Executed");
         this.executed = true;
@@ -394,7 +402,8 @@ public abstract class Call<V> implements Cloneable {
 
     protected abstract V doExecute() throws IOException;
 
-    @Override public final void enqueue(Callback<V> callback) {
+    @Override
+    public final void enqueue(Callback<V> callback) {
       synchronized (this) {
         if (this.executed) throw new IllegalStateException("Already Executed");
         this.executed = true;
@@ -409,7 +418,8 @@ public abstract class Call<V> implements Cloneable {
 
     protected abstract void doEnqueue(Callback<V> callback);
 
-    @Override public final void cancel() {
+    @Override
+    public final void cancel() {
       this.canceled = true;
       doCancel();
     }
@@ -417,7 +427,8 @@ public abstract class Call<V> implements Cloneable {
     protected void doCancel() {
     }
 
-    @Override public final boolean isCanceled() {
+    @Override
+    public final boolean isCanceled() {
       return this.canceled || doIsCanceled();
     }
 

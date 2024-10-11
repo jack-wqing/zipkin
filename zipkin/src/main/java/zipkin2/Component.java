@@ -44,6 +44,7 @@ public abstract class Component implements Closeable {
    * <p>For example, if this created a connection, it would close it. If it was provided one, this
    * would close any sessions, but leave the connection open.
    */
-  @Override public void close() throws IOException {
+  @Override
+  public void close() throws IOException {
   }
 }
