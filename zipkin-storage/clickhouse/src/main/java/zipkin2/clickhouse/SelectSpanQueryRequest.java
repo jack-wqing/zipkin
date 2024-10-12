@@ -46,7 +46,7 @@ public class SelectSpanQueryRequest implements Function<ClickHouseConnection, Li
     String querySql = String.format(Constants.SPAN_QUERY_REQUEST_SQL, spanTable);
     StringBuilder sqlCondition = new StringBuilder();
     Map<Integer, Object> parmMap = condition(sqlCondition);
-    querySql = querySql + sqlCondition.toString();
+    querySql = querySql + sqlCondition;
     try(PreparedStatement statement = connection.prepareStatement(querySql)) {
       statement.setObject(1, serviceName);
       statement.setObject(2, DateFormatUtils.format(new Date(endTs - lookback), Constants.DATE_FORMAT));
