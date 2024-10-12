@@ -42,7 +42,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    * <p>This is a primary label for trace lookup and aggregation, so it should be intuitive and
    * consistent. Many use a name from service discovery.
    */
-  @Nullable public String serviceName() {
+  @Nullable
+  public String serviceName() {
     return serviceName;
   }
 
@@ -50,7 +51,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    * The text representation of the primary IPv4 address associated with this a connection. Ex.
    * 192.168.99.100 Absent if unknown.
    */
-  @Nullable public String ipv4() {
+  @Nullable
+  public String ipv4() {
     return ipv4;
   }
 
@@ -60,7 +62,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    * @see #ipv6()
    * @see java.net.Inet4Address#getAddress()
    */
-  @Nullable public byte[] ipv4Bytes() {
+  @Nullable
+  public byte[] ipv4Bytes() {
     return ipv4Bytes;
   }
 
@@ -71,7 +74,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    * @see #ipv4() for mapped addresses
    * @see #ipv6Bytes()
    */
-  @Nullable public String ipv6() {
+  @Nullable
+  public String ipv6() {
     return ipv6;
   }
 
@@ -81,7 +85,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    * @see #ipv6()
    * @see java.net.Inet6Address#getAddress()
    */
-  @Nullable public byte[] ipv6Bytes() {
+  @Nullable
+  public byte[] ipv6Bytes() {
     return ipv6Bytes;
   }
 
@@ -90,7 +95,8 @@ public final class Endpoint implements Serializable { // for Spark and Flink job
    *
    * @see java.net.InetSocketAddress#getPort()
    */
-  @Nullable public Integer port() {
+  @Nullable
+  public Integer port() {
     return port != 0 ? port : null;
   }
 

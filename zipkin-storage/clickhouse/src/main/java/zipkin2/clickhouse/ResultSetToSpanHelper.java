@@ -1,6 +1,9 @@
 package zipkin2.clickhouse;
 
+import com.google.common.collect.Maps;
+import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
+import zipkin2.DependencyLink;
 import zipkin2.Endpoint;
 import zipkin2.Span;
 
@@ -8,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ResultSetToSpanHelper {
 
@@ -155,6 +159,52 @@ public class ResultSetToSpanHelper {
       spans.add(spanBuilder.build());
     }
     return spans;
+  }
+
+  public static final List<DependencyLink> resultSetToSpanDependency(ResultSet resultSet) throws SQLException {
+    List<DependencyLink> linkerList = new ArrayList<>();
+    Map<Pair<String, String>, Long> linkerMap = Maps.newHashMap();
+    while (resultSet.next()) {
+      String kindStr = resultSet.getString("kind");
+      String serviceName = resultSet.getString("localEndpointServiceName");
+      String remoteServiceName = resultSet.getString("remoteEndpointServiceName");
+      long count = resultSet.getLong("count");
+      if (StringUtils.isBlank(serviceName) || StringUtils.isBlank(remoteServiceName)) {
+        continue;
+      }
+      Span.Kind kind = Span.Kind.valueOf(kindStr);
+      if (kind == null) {
+        // Treat unknown type of span as a client span if we know both sides
+        if (serviceName != null && remoteServiceName != null) {
+          kind = Span.Kind.CLIENT;
+        } else {
+          continue;
+        }
+      }
+      String child;
+      String parent;
+      switch (kind) {
+        case SERVER:
+        case CONSUMER:
+          child = serviceName;
+          parent = remoteServiceName;
+          break;
+        case CLIENT:
+        case PRODUCER:
+          parent = serviceName;
+          child = remoteServiceName;
+          break;
+        default:
+          continue;
+      }
+      Pair<String, String> keyPair = new Pair<>(parent, child);
+      Long sumCount = linkerMap.getOrDefault(keyPair, 0L);
+      linkerMap.put(keyPair, sumCount + count);
+    }
+    linkerMap.forEach((k, v) -> {
+      linkerList.add(DependencyLink.newBuilder().parent(k.getKey()).child(k.getValue()).callCount(v).build());
+    });
+    return linkerList;
   }
 
 }

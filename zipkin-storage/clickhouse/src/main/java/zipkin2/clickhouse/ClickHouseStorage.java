@@ -5,6 +5,7 @@ import com.clickhouse.jdbc.ClickHouseDataSource;
 import com.clickhouse.jdbc.ClickHouseStatement;
 import zipkin2.Call;
 import zipkin2.CheckResult;
+import zipkin2.storage.AutocompleteTags;
 import zipkin2.storage.ServiceAndSpanNames;
 import zipkin2.storage.SpanConsumer;
 import zipkin2.storage.SpanStore;
@@ -116,7 +117,6 @@ public class ClickHouseStorage extends StorageComponent {
     spanTable = builder.spanTable;
     traceTable = builder.traceTable;
     namesLookback = builder.namesLookback;
-
   }
 
   public ClickHouseDataSource dataSource() {
@@ -133,6 +133,15 @@ public class ClickHouseStorage extends StorageComponent {
   @Override
   public ServiceAndSpanNames serviceAndSpanNames() {
     return (ServiceAndSpanNames)spanStore();
+  }
+  @Override
+  public AutocompleteTags autocompleteTags() {
+    return new ClickHouseAutocompleteTags(this);
+  }
+  // 系统过载判断
+  @Override
+  public boolean isOverCapacity(Throwable e) {
+    return super.isOverCapacity(e);
   }
   @Override
   public SpanConsumer spanConsumer() {

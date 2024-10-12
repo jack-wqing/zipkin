@@ -36,12 +36,14 @@ final class MySQLAutocompleteTags implements AutocompleteTags {
     keysCall = Call.create(storage.autocompleteKeys);
   }
 
-  @Override public Call<List<String>> getKeys() {
+  @Override
+  public Call<List<String>> getKeys() {
     if (!enabled) return Call.emptyList();
     return keysCall.clone();
   }
 
-  @Override public Call<List<String>> getValues(String key) {
+  @Override
+  public Call<List<String>> getValues(String key) {
     if (key == null) throw new NullPointerException("key == null");
     if (key.isEmpty()) throw new IllegalArgumentException("key was empty");
     if (!enabled || !autocompleteKeys.contains(key)) return Call.emptyList();

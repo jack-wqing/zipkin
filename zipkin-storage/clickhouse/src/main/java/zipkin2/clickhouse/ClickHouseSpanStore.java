@@ -99,8 +99,8 @@ public class ClickHouseSpanStore implements SpanStore, Traces, ServiceAndSpanNam
   public Call<List<DependencyLink>> getDependencies(long endTs, long lookback) {
     if (endTs <= 0) throw new IllegalArgumentException("endTs <= 0");
     if (lookback <= 0) throw new IllegalArgumentException("lookback <= 0");
-    //暂时不实现先测试功能
-
-    return Call.emptyList();
+    DataSourceCall<List<DependencyLink>> result =
+      dataSourceFactory.create(new ClickHouseAggregateDependencies(strictTraceId, spanTable, endTs, lookback));
+    return result;
   }
 }

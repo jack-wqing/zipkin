@@ -84,9 +84,7 @@ public class ZipkinQueryApiV2 {
    */
   @Get("/api/v2/dependencies")
   @Blocking
-  public AggregatedHttpResponse getDependencies(
-    @Param("endTs") long endTs,
-    @Param("lookback") Optional<Long> lookback) throws IOException {
+  public AggregatedHttpResponse getDependencies(@Param("endTs") long endTs, @Param("lookback") Optional<Long> lookback) throws IOException {
     Call<List<DependencyLink>> call =
       storage.spanStore().getDependencies(endTs, lookback.orElse(defaultLookback));
     return jsonResponse(DependencyLinkBytesEncoder.JSON_V1.encodeList(call.execute()));
@@ -200,7 +198,7 @@ public class ZipkinQueryApiV2 {
   @Get("/api/v2/autocompleteKeys")
   @Blocking
   public AggregatedHttpResponse getAutocompleteKeys(ServiceRequestContext ctx) {
-    return maybeCacheNames(true, autocompleteKeys, ctx.alloc());
+    return maybeCacheNames(false, autocompleteKeys, ctx.alloc());
   }
 
   @Get("/api/v2/autocompleteValues")

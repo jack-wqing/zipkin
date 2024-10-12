@@ -37,7 +37,7 @@ public final class DependencyLink implements Serializable { // for Spark and Fli
     return parent;
   }
 
-  /** The chold service name (callee), {@link Span#localServiceName()} if instrumented. */
+  /** The child service name (callee), {@link Span#localServiceName()} if instrumented. */
   public String child() {
     return child;
   }

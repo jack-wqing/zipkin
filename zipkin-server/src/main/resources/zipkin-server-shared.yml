@@ -90,7 +90,7 @@ zipkin:
   storage:
     strict-trace-id: ${STRICT_TRACE_ID:true}
     search-enabled: ${SEARCH_ENABLED:true}
-    autocomplete-keys: ${AUTOCOMPLETE_KEYS:}
+    autocomplete-keys: ${AUTOCOMPLETE_KEYS:tagsAppname,tagsHttpPath,tagsRpcService}
     autocomplete-ttl: ${AUTOCOMPLETE_TTL:3600000}
     autocomplete-cardinality: 20000
     type: ${STORAGE_TYPE:clickhouse}
@@ -180,8 +180,8 @@ zipkin:
       # span存储的表明
       spanTable: zipkin_spans
       traceTable: zipkin_spans_trace
-      # 需要服务名的时间窗口 1h
-      namesLookback: 3600000
+      # 需要服务名的时间窗口 1d
+      namesLookback: 86400000
 
   ui:
     enabled: ${QUERY_ENABLED:true}

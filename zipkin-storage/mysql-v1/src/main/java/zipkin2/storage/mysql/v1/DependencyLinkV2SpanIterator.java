@@ -190,7 +190,8 @@ final class DependencyLinkV2SpanIterator implements Iterator<Span> {
     return delegate.peek().getValue(ZipkinSpans.ZIPKIN_SPANS.TRACE_ID_HIGH);
   }
 
-  static @Nullable String emptyToNull(Record next, TableField<Record, String> field) {
+  static @Nullable
+  String emptyToNull(Record next, TableField<Record, String> field) {
     String result = next.getValue(field);
     return result != null && !"".equals(result) ? result : null;
   }
