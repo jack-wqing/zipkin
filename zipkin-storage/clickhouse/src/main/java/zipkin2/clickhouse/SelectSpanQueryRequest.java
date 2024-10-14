@@ -40,17 +40,19 @@ public class SelectSpanQueryRequest implements Function<ClickHouseConnection, Li
     }
     //优化查询服务名必须
     String serviceName = queryRequest.serviceName();
-    if(StringUtils.isBlank(serviceName)) {
-      return Collections.emptyList();
-    }
-    String querySql = String.format(Constants.SPAN_QUERY_REQUEST_SQL, spanTable);
+    boolean hasServiceName = StringUtils.isNotBlank(serviceName);
+    String sql = hasServiceName ? Constants.SPAN_QUERY_REQUEST_TIME_SQL : Constants.SPAN_QUERY_REQUEST_SQL;
+    String querySql = String.format(sql, spanTable);
     StringBuilder sqlCondition = new StringBuilder();
-    Map<Integer, Object> parmMap = condition(sqlCondition);
+    int index =  hasServiceName ? 4 : 3;
+    Map<Integer, Object> parmMap = condition(sqlCondition, index);
     querySql = querySql + sqlCondition;
     try(PreparedStatement statement = connection.prepareStatement(querySql)) {
-      statement.setObject(1, serviceName);
-      statement.setObject(2, DateFormatUtils.format(new Date(endTs - lookback), Constants.DATE_FORMAT));
-      statement.setObject(3, DateFormatUtils.format(new Date(endTs), Constants.DATE_FORMAT));
+      if (hasServiceName) {
+        statement.setObject(1, serviceName);
+      }
+      statement.setObject(hasServiceName ? 2 : 1, DateFormatUtils.format(new Date(endTs - lookback), Constants.DATE_FORMAT));
+      statement.setObject(hasServiceName ? 3 : 2, DateFormatUtils.format(new Date(endTs), Constants.DATE_FORMAT));
       parmMap.forEach((k, v) -> {
           try {
               statement.setObject(k, v);
@@ -67,10 +69,9 @@ public class SelectSpanQueryRequest implements Function<ClickHouseConnection, Li
     return Collections.emptyList();
   }
 
-  private Map<Integer, Object> condition(StringBuilder sqlCondition) {
+  private Map<Integer, Object> condition(StringBuilder sqlCondition, int index) {
     Map<Integer, Object> paramMap = Maps.newHashMap();
     String remoteServiceName = queryRequest.remoteServiceName();
-    int index = 4;
     if (StringUtils.isNotBlank(remoteServiceName)) {
       sqlCondition.append(" AND remoteEndpointServiceName = ?");
       paramMap.put(index++, remoteServiceName);

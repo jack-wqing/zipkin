@@ -53,7 +53,8 @@ final class MySQLSpanStore implements SpanStore, Traces, ServiceAndSpanNames {
     this.getServiceNamesCall = dataSourceCallFactory.create(new SelectAnnotationServiceNames());
   }
 
-  @Override public Call<List<List<Span>>> getTraces(QueryRequest request) {
+  @Override
+  public Call<List<List<Span>>> getTraces(QueryRequest request) {
     if (!searchEnabled) return Call.emptyList();
 
     Call<List<List<Span>>> result =
@@ -64,7 +65,8 @@ final class MySQLSpanStore implements SpanStore, Traces, ServiceAndSpanNames {
     return strictTraceId ? result.map(StrictTraceId.filterTraces(request)) : result;
   }
 
-  @Override public Call<List<Span>> getTrace(String hexTraceId) {
+  @Override
+  public Call<List<Span>> getTrace(String hexTraceId) {
     // make sure we have a 16 or 32 character trace ID
     hexTraceId = Span.normalizeTraceId(hexTraceId);
     long traceIdHigh = hexTraceId.length() == 32 ? lowerHexToUnsignedLong(hexTraceId, 0) : 0L;
@@ -76,7 +78,8 @@ final class MySQLSpanStore implements SpanStore, Traces, ServiceAndSpanNames {
     return strictTraceId ? result.map(StrictTraceId.filterSpans(hexTraceId)) : result;
   }
 
-  @Override public Call<List<List<Span>>> getTraces(Iterable<String> traceIds) {
+  @Override
+  public Call<List<List<Span>>> getTraces(Iterable<String> traceIds) {
     Set<String> normalizedTraceIds = new LinkedHashSet<>();
     Set<Pair> traceIdPairs = new LinkedHashSet<>();
     for (String traceId : traceIds) {

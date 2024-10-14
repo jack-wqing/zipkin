@@ -21,6 +21,7 @@ public class Constants {
 
   public static final String SPAN_TRACE_IDS_SQL = "select * from %s where traceId in (%s)";
 
+  public static final String SPAN_QUERY_REQUEST_TIME_SQL = "select * from %s where time >= ? AND time <= ?";
   public static final String SPAN_QUERY_REQUEST_SQL = "select * from %s where localEndpointServiceName = ? AND time >= ? AND time <= ?";
 
   public static final String TAG_VALUE_SQL = "select distinct %s from %s where time >= ? AND time <= ?";
