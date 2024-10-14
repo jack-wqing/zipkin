@@ -13,12 +13,6 @@
  */
 package zipkin2.collector;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import zipkin2.Callback;
@@ -28,8 +22,14 @@ import zipkin2.codec.BytesDecoder;
 import zipkin2.codec.SpanBytesDecoder;
 import zipkin2.storage.StorageComponent;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
+
 import static java.lang.String.format;
-import static java.util.logging.Level.FINE;
 import static zipkin2.Call.propagateIfFatal;
 
 /**
@@ -42,10 +42,13 @@ import static zipkin2.Call.propagateIfFatal;
  */
 public class Collector { // not final for mock
   static final Callback<Void> NOOP_CALLBACK = new Callback<Void>() {
-    @Override public void onSuccess(Void value) {
-    }
+    @Override
+    public void onSuccess(Void value) {
 
-    @Override public void onError(Throwable t) {
+    }
+    @Override
+    public void onError(Throwable t) {
+
     }
   };
 
@@ -225,7 +228,8 @@ public class Collector { // not final for mock
       this.spans = spans;
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
       try {
         store(spans, this);
       } catch (RuntimeException | Error e) {
