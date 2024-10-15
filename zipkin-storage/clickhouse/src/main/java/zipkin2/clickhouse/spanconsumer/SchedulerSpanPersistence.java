@@ -66,6 +66,9 @@ public class SchedulerSpanPersistence {
   }
 
   private void doInsert(int size) {
+    if (size == 0) {
+      return;
+    }
     List<Span> spans = SpansQueueManager.partSpans(size);
     ExecuteWriteExecutor executor = new ExecuteWriteExecutor(dataSource, spanTable, spans);
     executor.execute();
