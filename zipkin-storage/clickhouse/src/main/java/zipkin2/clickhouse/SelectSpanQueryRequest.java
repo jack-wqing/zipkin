@@ -82,7 +82,7 @@ public class SelectSpanQueryRequest implements Function<ClickHouseConnection, Li
       paramMap.put(index++, spanName);
     }
     String annotationQueryString = queryRequest.annotationQueryString();
-    if (StringUtils.isNotBlank(spanName)) {
+    if (StringUtils.isNotBlank(annotationQueryString)) {
       sqlCondition.append(" " + annotationQueryString);
     }
     Long minDuration = queryRequest.minDuration();

@@ -29,7 +29,7 @@ public class BatchSql {
     StringBuilder sqlValueSb = new StringBuilder();
     data.forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
     if (sqlValueSb.length() > 0) {
-      return sqlValueSb.substring(1);
+      return startSql + sqlValueSb.substring(1);
     }
     return Constants.BLANK;
   }
@@ -46,7 +46,7 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(longValue(span.timestamp()) + Constants.COMMA);
     handleTag(span, valueSb);
-    valueSb.append(Constants.SINGLE_QUOTA +  DateFormatUtils.format(new Date(longValue(span.timestamp())), Constants.DATE_FORMAT) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA +  DateFormatUtils.format(new Date(longValue(span.timestamp()) / 1000), Constants.DATE_FORMAT) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA +"" + Constants.SINGLE_QUOTA);
     valueSb.append(Constants.RIGHT_BRACKET);
     return valueSb.toString();
