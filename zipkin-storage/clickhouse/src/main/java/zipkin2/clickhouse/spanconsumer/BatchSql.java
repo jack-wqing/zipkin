@@ -1,6 +1,7 @@
 package zipkin2.clickhouse.spanconsumer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import zipkin2.Endpoint;
 import zipkin2.Span;
@@ -33,7 +34,7 @@ public class BatchSql {
     return Constants.BLANK;
   }
   private String span(Span span) {
-    if (Objects.isNull(span)) {
+    if (Objects.isNull(span) || StringUtils.isBlank(span.id())) {
       return "";
     }
     StringBuilder valueSb = new StringBuilder(Constants.LEFT_BRACKET);

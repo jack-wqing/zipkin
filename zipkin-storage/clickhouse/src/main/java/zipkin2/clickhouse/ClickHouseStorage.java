@@ -131,6 +131,7 @@ public class ClickHouseStorage extends StorageComponent {
     traceTable = builder.traceTable;
     namesLookback = builder.namesLookback;
     schedulerSpanPersistence = new SchedulerSpanPersistence(dataSource, spanTable, builder.batchSize);
+    schedulerSpanPersistence.start();
   }
 
   public ClickHouseDataSource dataSource() {

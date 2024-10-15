@@ -55,6 +55,7 @@ public class SchedulerSpanPersistence {
       doInsert(size);
       //如果剩余的数据量还是大于设置的batchSize数量，则在进行保存
       runInsert();
+      setNoRunning();
     }
   }
 

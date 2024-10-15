@@ -41,7 +41,7 @@ public class SelectSpanQueryRequest implements Function<ClickHouseConnection, Li
     //优化查询服务名必须
     String serviceName = queryRequest.serviceName();
     boolean hasServiceName = StringUtils.isNotBlank(serviceName);
-    String sql = hasServiceName ? Constants.SPAN_QUERY_REQUEST_TIME_SQL : Constants.SPAN_QUERY_REQUEST_SQL;
+    String sql = hasServiceName ? Constants.SPAN_QUERY_REQUEST_SQL : Constants.SPAN_QUERY_REQUEST_TIME_SQL;
     String querySql = String.format(sql, spanTable);
     StringBuilder sqlCondition = new StringBuilder();
     int index =  hasServiceName ? 4 : 3;
