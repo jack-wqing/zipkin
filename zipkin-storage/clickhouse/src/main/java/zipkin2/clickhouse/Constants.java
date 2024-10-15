@@ -6,9 +6,17 @@ package zipkin2.clickhouse;
  * @Description:
  **/
 public class Constants {
-
+  public static final String BLANK = "";
 
   public static final String SPAN_TABLE = "{spanTable}";
+
+  public static final String RIGHT_BRACKET = ")";
+
+  public static final String LEFT_BRACKET = "(";
+
+  public static final String COMMA = ",";
+
+  public static final String SINGLE_QUOTA = "'";
 
   public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -29,5 +37,11 @@ public class Constants {
   public static final String DEPENDENCY_SQL = "select kind, localEndpointServiceName, remoteEndpointServiceName, count(*) as count from " + SPAN_TABLE + " "
     + "where time >= ? AND time <= ? AND remoteEndpointServiceName NOT LIKE '%:%' AND localEndpointServiceName NOT LIKE '%:%' "
     + "group by kind,localEndpointServiceName,remoteEndpointServiceName";
+
+  public static final String INSERT_SQL = "INSERT INTO %s (traceId,parentId,id,kind,duration,name,timestamp,status,timestampMillis,localEndpointIpv4,"
+    + "localEndpointServiceName,localEndpointPort,remoteEndpointIpv4,remoteEndpointServiceName,remoteEndpointPort,tagsRpcMethod,tagsRpcService,tagsAppname,"
+    + "tagsComponent,tagsHttpUrl,tagsHttpMethod,tagsCatMessageId,tagsHttpPath,tagsHttpRequestSize,tagsHttpResponseSize,tagsHttpStatusCode,tagsLocalIpv4,"
+    + "tagsPeerIpv4,tagsPeerService,tagsPeerPort,tagsPeerHostname,tagsPeerIpv6,tagsProcessId,tagsSpanKind,tagsWorkerId,logFilePath,time,tagsSql) VALUES ";
+
 
 }

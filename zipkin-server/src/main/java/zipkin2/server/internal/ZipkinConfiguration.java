@@ -50,7 +50,8 @@ public class ZipkinConfiguration {
     return CollectorSampler.create(rate);
   }
 
-  @Bean CollectorMetrics metrics(MeterRegistry registry) {
+  @Bean
+  CollectorMetrics metrics(MeterRegistry registry) {
     return new MicrometerCollectorMetrics(registry);
   }
 
@@ -67,7 +68,8 @@ public class ZipkinConfiguration {
      */
     BeanFactory beanFactory;
 
-    @Override public Object postProcessAfterInitialization(Object bean, String beanName) {
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
       if (bean instanceof StorageComponent) {
         ZipkinStorageThrottleProperties throttleProperties =
           beanFactory.getBean(ZipkinStorageThrottleProperties.class);
@@ -81,7 +83,8 @@ public class ZipkinConfiguration {
       return bean;
     }
 
-    @Override public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
       this.beanFactory = beanFactory;
     }
   }

@@ -77,17 +77,20 @@ public final class InMemoryStorage extends StorageComponent implements SpanStore
     int maxSpanCount = 500000;
     List<String> autocompleteKeys = Collections.emptyList();
 
-    @Override public Builder strictTraceId(boolean strictTraceId) {
+    @Override
+    public Builder strictTraceId(boolean strictTraceId) {
       this.strictTraceId = strictTraceId;
       return this;
     }
 
-    @Override public Builder searchEnabled(boolean searchEnabled) {
+    @Override
+    public Builder searchEnabled(boolean searchEnabled) {
       this.searchEnabled = searchEnabled;
       return this;
     }
 
-    @Override public Builder autocompleteKeys(List<String> autocompleteKeys) {
+    @Override
+    public Builder autocompleteKeys(List<String> autocompleteKeys) {
       if (autocompleteKeys == null) throw new NullPointerException("autocompleteKeys == null");
       this.autocompleteKeys = autocompleteKeys;
       return this;
@@ -100,7 +103,8 @@ public final class InMemoryStorage extends StorageComponent implements SpanStore
       return this;
     }
 
-    @Override public InMemoryStorage build() {
+    @Override
+    public InMemoryStorage build() {
       return new InMemoryStorage(this);
     }
   }
@@ -113,7 +117,8 @@ public final class InMemoryStorage extends StorageComponent implements SpanStore
    */
   private final SortedMultimap<TraceIdTimestamp, Span> spansByTraceIdTimestamp =
     new SortedMultimap<TraceIdTimestamp, Span>(TIMESTAMP_DESCENDING) {
-      @Override Collection<Span> valueContainer() {
+      @Override
+      Collection<Span> valueContainer() {
         return new LinkedHashSet<Span>();
       }
     };
@@ -225,12 +230,14 @@ public final class InMemoryStorage extends StorageComponent implements SpanStore
       this.spans = spans;
     }
 
-    @Override protected Void doExecute() {
+    @Override
+    protected Void doExecute() {
       doAccept(spans);
       return null;
     }
 
-    @Override protected void doEnqueue(Callback<Void> callback) {
+    @Override
+    protected void doEnqueue(Callback<Void> callback) {
       try {
         callback.onSuccess(doExecute());
       } catch (Throwable t) {

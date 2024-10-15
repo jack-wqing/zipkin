@@ -13,6 +13,8 @@ public class ZipkinClickHouseStorageProperties implements Serializable {
 
   private String traceTable = "zipkin_spans_trace";
   private long namesLookback = 86400000;
+
+  private int batchSize = 100000;
   public String getUrl() {
     return url;
   }
@@ -51,5 +53,13 @@ public class ZipkinClickHouseStorageProperties implements Serializable {
 
   public void setNamesLookback(long namesLookback) {
     this.namesLookback = namesLookback;
+  }
+
+  public int getBatchSize() {
+    return batchSize;
+  }
+
+  public void setBatchSize(int batchSize) {
+    this.batchSize = batchSize;
   }
 }

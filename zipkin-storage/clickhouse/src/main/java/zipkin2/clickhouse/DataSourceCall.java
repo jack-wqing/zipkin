@@ -14,7 +14,7 @@ import java.util.function.Function;
  * 表示clickhouse的操作
  */
 public class DataSourceCall<V> extends Call.Base<V>{
-  static final class Factory {
+  public static final class Factory {
     final ClickHouseDataSource dataSource;
     final Executor executor;
 

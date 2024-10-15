@@ -5,6 +5,8 @@ import com.clickhouse.jdbc.ClickHouseDataSource;
 import com.clickhouse.jdbc.ClickHouseStatement;
 import zipkin2.Call;
 import zipkin2.CheckResult;
+import zipkin2.clickhouse.spanconsumer.ClickHouseSpanConsumer;
+import zipkin2.clickhouse.spanconsumer.SchedulerSpanPersistence;
 import zipkin2.storage.AutocompleteTags;
 import zipkin2.storage.ServiceAndSpanNames;
 import zipkin2.storage.SpanConsumer;
@@ -40,6 +42,8 @@ public class ClickHouseStorage extends StorageComponent {
     private String traceTable;
 
     private long namesLookback;
+    public int batchSize;
+
     @Override
     public Builder strictTraceId(boolean strictTraceId) {
       this.strictTraceId = strictTraceId;
@@ -86,6 +90,12 @@ public class ClickHouseStorage extends StorageComponent {
       this.namesLookback = namesLookback;
       return this;
     }
+
+    public Builder batchSize(int batchSize) {
+      this.batchSize = batchSize;
+      return this;
+    }
+
     @Override
     public StorageComponent build() {
       return new ClickHouseStorage(this);
@@ -101,6 +111,9 @@ public class ClickHouseStorage extends StorageComponent {
 
   public String traceTable;
   public long namesLookback;
+
+  final SchedulerSpanPersistence schedulerSpanPersistence;
+
   public ClickHouseStorage(Builder builder) {
     dataSource = builder.dataSource;
     if (dataSource == null) {
@@ -117,6 +130,7 @@ public class ClickHouseStorage extends StorageComponent {
     spanTable = builder.spanTable;
     traceTable = builder.traceTable;
     namesLookback = builder.namesLookback;
+    schedulerSpanPersistence = new SchedulerSpanPersistence(dataSource, spanTable, builder.batchSize);
   }
 
   public ClickHouseDataSource dataSource() {
@@ -145,8 +159,7 @@ public class ClickHouseStorage extends StorageComponent {
   }
   @Override
   public SpanConsumer spanConsumer() {
-
-    return null;
+    return new ClickHouseSpanConsumer(schedulerSpanPersistence);
   }
 
   @Override

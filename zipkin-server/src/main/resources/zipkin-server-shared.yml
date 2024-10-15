@@ -182,7 +182,7 @@ zipkin:
       traceTable: zipkin_spans_trace
       # 需要服务名的时间窗口 1d
       namesLookback: 86400000
-
+      batchSize: 100000
   ui:
     enabled: ${QUERY_ENABLED:true}
     ## Values below here are mapped to ZipkinUiProperties, served as /config.json
