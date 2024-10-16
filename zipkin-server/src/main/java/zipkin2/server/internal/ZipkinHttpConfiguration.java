@@ -38,10 +38,10 @@ import zipkin2.server.internal.prometheus.ZipkinMetricsController;
 
 @Configuration(proxyBeanMethods = false)
 public class ZipkinHttpConfiguration {
-  public static final MediaType MEDIA_TYPE_ACTUATOR =
-    MediaType.parse("application/vnd.spring-boot.actuator.v2+json;charset=UTF-8");
+  public static final MediaType MEDIA_TYPE_ACTUATOR = MediaType.parse("application/vnd.spring-boot.actuator.v2+json;charset=UTF-8");
 
-  @Bean ArmeriaServerConfigurator serverConfigurator(
+  @Bean
+  ArmeriaServerConfigurator serverConfigurator(
     Optional<ZipkinQueryApiV2> httpQuery,
     Optional<ZipkinHttpCollector> httpCollector,
     Optional<ZipkinHealthController> healthController,
@@ -84,7 +84,9 @@ public class ZipkinHttpConfiguration {
   }
 
   /** Configures the server at the last because of the specified {@link Order} annotation. */
-  @Order @Bean ArmeriaServerConfigurator corsConfigurator(
+  @Order
+  @Bean
+  ArmeriaServerConfigurator corsConfigurator(
     @Value("${zipkin.query.allowed-origins:*}") String allowedOrigins) {
     CorsServiceBuilder corsBuilder = CorsService.builder(allowedOrigins.split(","))
       // NOTE: The property says query, and the UI does not use POST, but we allow POST?

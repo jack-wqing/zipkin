@@ -59,7 +59,8 @@ public @interface ConditionalOnSelfTracing {
       if (!Boolean.valueOf(selfTracingEnabled)) {
         return ConditionOutcome.noMatch("zipkin.self-tracing.enabled isn't true");
       }
-      String expectedStorageType = AnnotationAttributes.fromMap(a.getAnnotationAttributes(ConditionalOnSelfTracing.class.getName())).getString("storageType");
+      String expectedStorageType = AnnotationAttributes.fromMap(a.getAnnotationAttributes(ConditionalOnSelfTracing.class.getName()))
+        .getString("storageType");
       if (expectedStorageType.equals("")) {
         return ConditionOutcome.match();
       }

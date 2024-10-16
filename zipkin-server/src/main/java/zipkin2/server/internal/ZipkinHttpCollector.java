@@ -56,11 +56,9 @@ public class ZipkinHttpCollector {
   final Collector collector;
 
   @SuppressWarnings("StaticAssignmentInConstructor")
-  ZipkinHttpCollector(
-    StorageComponent storage, CollectorSampler sampler, CollectorMetrics metrics) {
+  ZipkinHttpCollector(StorageComponent storage, CollectorSampler sampler, CollectorMetrics metrics) {
     metrics = metrics.forTransport("http");
-    collector =
-      Collector.newBuilder(getClass()).storage(storage).sampler(sampler).metrics(metrics).build();
+    collector = Collector.newBuilder(getClass()).storage(storage).sampler(sampler).metrics(metrics).build();
     ZipkinHttpCollector.metrics = metrics; // converter instances aren't injected by Spring
   }
 

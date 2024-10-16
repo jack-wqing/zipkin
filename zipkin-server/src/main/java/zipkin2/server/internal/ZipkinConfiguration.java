@@ -71,8 +71,7 @@ public class ZipkinConfiguration {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
       if (bean instanceof StorageComponent) {
-        ZipkinStorageThrottleProperties throttleProperties =
-          beanFactory.getBean(ZipkinStorageThrottleProperties.class);
+        ZipkinStorageThrottleProperties throttleProperties = beanFactory.getBean(ZipkinStorageThrottleProperties.class);
         return new ThrottledStorageComponent((StorageComponent) bean,
           beanFactory.getBean(MeterRegistry.class),
           beanFactory.containsBean("tracing") ? beanFactory.getBean(Tracing.class) : null,
@@ -99,11 +98,13 @@ public class ZipkinConfiguration {
      */
     BeanFactory beanFactory;
 
-    @Override public Object postProcessBeforeInitialization(Object bean, String beanName) {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
       return bean;
     }
 
-    @Override public Object postProcessAfterInitialization(Object bean, String beanName) {
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
       if (bean instanceof StorageComponent && beanFactory.containsBean("tracing")) {
         Tracing tracing = beanFactory.getBean(Tracing.class);
         return new TracingStorageComponent(tracing, (StorageComponent) bean);
@@ -111,7 +112,8 @@ public class ZipkinConfiguration {
       return bean;
     }
 
-    @Override public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
       this.beanFactory = beanFactory;
     }
   }
@@ -124,8 +126,7 @@ public class ZipkinConfiguration {
   @ConditionalOnMissingBean(StorageComponent.class)
   static class InMemoryConfiguration {
     @Bean
-    StorageComponent storage(
-      @Value("${zipkin.storage.strict-trace-id:true}") boolean strictTraceId,
+    StorageComponent storage(@Value("${zipkin.storage.strict-trace-id:true}") boolean strictTraceId,
       @Value("${zipkin.storage.search-enabled:true}") boolean searchEnabled,
       @Value("${zipkin.storage.mem.max-spans:500000}") int maxSpans,
       @Value("${zipkin.storage.autocomplete-keys:}") List<String> autocompleteKeys) {
