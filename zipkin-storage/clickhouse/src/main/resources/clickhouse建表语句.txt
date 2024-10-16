@@ -46,6 +46,50 @@ ORDER BY (time,localEndpointServiceName)
 TTL time + toIntervalDay(7)
 SETTINGS index_granularity = 8192;
 
+分布式表:
+CREATE TABLE log.zipkin_spans_dist
+(
+    `traceId` String,
+    `parentId` String,
+    `id` String,
+    `kind` String,
+    `duration` UInt32,
+    `name` String,
+    `timestamp` String,
+    `status` String,
+    `timestampMillis` UInt64,
+    `localEndpointIpv4` String,
+    `localEndpointServiceName` String,
+    `localEndpointPort` String,
+    `remoteEndpointIpv4` String,
+    `remoteEndpointServiceName` String,
+    `remoteEndpointPort` String,
+    `tagsRpcMethod` String,
+    `tagsRpcService` String,
+    `tagsAppname` String,
+    `tagsComponent` String,
+    `tagsHttpUrl` String,
+    `tagsHttpMethod` String,
+    `tagsCatMessageId` String,
+    `tagsHttpPath` String,
+    `tagsHttpRequestSize` UInt32,
+    `tagsHttpResponseSize` UInt32,
+    `tagsHttpStatusCode` UInt32,
+    `tagsLocalIpv4` String,
+    `tagsPeerIpv4` String,
+    `tagsPeerService` String,
+    `tagsPeerPort` UInt32,
+    `tagsPeerHostname` String,
+    `tagsPeerIpv6` String,
+    `tagsProcessId` UInt32,
+    `tagsSpanKind` String,
+    `tagsWorkerId` UInt32,
+    `logFilePath` String,
+    `time` DateTime,
+    `tagsSql` String
+)
+ENGINE = Distributed('cluster_log', 'log', 'zipkin_spans', rand());
+
 trace场景索引:
 CREATE TABLE log.zipkin_spans_trace
 (
@@ -93,7 +137,49 @@ PARTITION BY toYYYYMMDD(time)
 ORDER BY (traceId)
 TTL time + toIntervalDay(7)
 SETTINGS index_granularity = 8192;
-
+物化视图分布式表
+CREATE TABLE log.zipkin_spans_trace_dist
+(
+    `traceId` String,
+    `parentId` String,
+    `id` String,
+    `kind` String,
+    `duration` UInt32,
+    `name` String,
+    `timestamp` String,
+    `status` String,
+    `timestampMillis` UInt64,
+    `localEndpointIpv4` String,
+    `localEndpointServiceName` String,
+    `localEndpointPort` String,
+    `remoteEndpointIpv4` String,
+    `remoteEndpointServiceName` String,
+    `remoteEndpointPort` String,
+    `tagsRpcMethod` String,
+    `tagsRpcService` String,
+    `tagsAppname` String,
+    `tagsComponent` String,
+    `tagsHttpUrl` String,
+    `tagsHttpMethod` String,
+    `tagsCatMessageId` String,
+    `tagsHttpPath` String,
+    `tagsHttpRequestSize` UInt32,
+    `tagsHttpResponseSize` UInt32,
+    `tagsHttpStatusCode` UInt32,
+    `tagsLocalIpv4` String,
+    `tagsPeerIpv4` String,
+    `tagsPeerService` String,
+    `tagsPeerPort` UInt32,
+    `tagsPeerHostname` String,
+    `tagsPeerIpv6` String,
+    `tagsProcessId` UInt32,
+    `tagsSpanKind` String,
+    `tagsWorkerId` UInt32,
+    `logFilePath` String,
+    `time` DateTime,
+    `tagsSql` String
+)
+ENGINE = Distributed('cluster_log', 'log', 'zipkin_spans_trace', rand());
 
 
 数据迁移sql
@@ -140,7 +226,7 @@ FROM remote('10.100.5.161:9000', 'log', 'zipkin_prod') AS t
 ORDER BY time DESC
 
 创建物化视图
-CREATE MATERIALIZED VIEW log.zipkin_spans_trace_mv TO log.zipkin_spans_trace AS
+CREATE MATERIALIZED VIEW log.zipkin_spans_trace_dist_mv TO log.zipkin_spans_trace_dist AS
 SELECT traceId AS traceId,
        parentId AS parentId,
        id AS id,
@@ -179,4 +265,4 @@ SELECT traceId AS traceId,
        logFilePath AS logFilePath,
        time AS time,
        tagsSql AS tagsSql
-FROM log.zipkin_spans;
+FROM log.zipkin_spans_dist;
