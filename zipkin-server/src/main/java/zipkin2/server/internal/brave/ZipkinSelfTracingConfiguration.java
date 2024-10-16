@@ -25,9 +25,6 @@ import brave.sampler.Sampler;
 import com.linecorp.armeria.common.brave.RequestContextCurrentTraceContext;
 import com.linecorp.armeria.server.brave.BraveService;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,14 +40,20 @@ import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.server.internal.ConditionalOnSelfTracing;
 import zipkin2.storage.StorageComponent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 @EnableConfigurationProperties(SelfTracingProperties.class)
 @ConditionalOnSelfTracing
 public class ZipkinSelfTracingConfiguration {
   /** Configuration for how to buffer spans into messages for Zipkin */
-  @Bean AsyncZipkinSpanHandler reporter(BeanFactory factory, SelfTracingProperties config) {
+  @Bean
+  AsyncZipkinSpanHandler reporter(BeanFactory factory, SelfTracingProperties config) {
     return AsyncZipkinSpanHandler.newBuilder(new LocalSender(factory))
       .threadFactory((runnable) -> new Thread(new Runnable() {
-        @Override public void run() {
+        @Override
+        public void run() {
           RequestContextCurrentTraceContext.setCurrentThreadNotRequestThread(true);
           runnable.run();
         }
@@ -64,7 +67,8 @@ public class ZipkinSelfTracingConfiguration {
       .build();
   }
 
-  @Bean CurrentTraceContext currentTraceContext() {
+  @Bean
+  CurrentTraceContext currentTraceContext() {
     return RequestContextCurrentTraceContext.builder()
       .addScopeDecorator(MDCScopeDecorator.get()) // puts trace IDs into logs
       .build();
@@ -74,7 +78,8 @@ public class ZipkinSelfTracingConfiguration {
    * There's no attribute namespace shared across request and response. Hence, we need to save off a
    * reference to the span in scope, so that we can close it in the response.
    */
-  @Bean ThreadLocalSpan threadLocalSpan(Tracing tracing) {
+  @Bean
+  ThreadLocalSpan threadLocalSpan(Tracing tracing) {
     return ThreadLocalSpan.create(tracing.tracer());
   }
 
@@ -86,7 +91,8 @@ public class ZipkinSelfTracingConfiguration {
    *
    * See https://github.com/openzipkin/brave/pull/914 for the messaging abstraction
    */
-  @Bean Sampler sampler(SelfTracingProperties config) {
+  @Bean
+  Sampler sampler(SelfTracingProperties config) {
     if (config.getSampleRate() != 1.0) {
       if (config.getSampleRate() < 0.01) {
         return BoundarySampler.create(config.getSampleRate());
@@ -100,7 +106,8 @@ public class ZipkinSelfTracingConfiguration {
   }
 
   /** Controls aspects of tracing such as the name that shows up in the UI */
-  @Bean Tracing tracing(AsyncZipkinSpanHandler zipkinSpanHandler, CurrentTraceContext currentTraceContext) {
+  @Bean
+  Tracing tracing(AsyncZipkinSpanHandler zipkinSpanHandler, CurrentTraceContext currentTraceContext) {
     return Tracing.newBuilder()
       .localServiceName("zipkin-server")
       .sampler(Sampler.NEVER_SAMPLE) // don't sample traces at this abstraction
@@ -113,7 +120,8 @@ public class ZipkinSelfTracingConfiguration {
       .build();
   }
 
-  @Bean HttpTracing httpTracing(Tracing tracing, Sampler sampler) {
+  @Bean
+  HttpTracing httpTracing(Tracing tracing, Sampler sampler) {
     return HttpTracing.newBuilder(tracing)
       // server starts traces for read requests under the path /api
       .serverSampler(request -> {
@@ -127,7 +135,8 @@ public class ZipkinSelfTracingConfiguration {
       .build();
   }
 
-  @Bean ArmeriaServerConfigurator tracingConfigurator(HttpTracing tracing) {
+  @Bean
+  ArmeriaServerConfigurator tracingConfigurator(HttpTracing tracing) {
     return server -> server.decorator(BraveService.newDecorator(tracing));
   }
 
@@ -140,21 +149,25 @@ public class ZipkinSelfTracingConfiguration {
       this.factory = factory;
     }
 
-    @Override public Encoding encoding() {
+    @Override
+    public Encoding encoding() {
       // TODO: less memory efficient, but not a huge problem for self-tracing which is rarely on
       // https://github.com/openzipkin/zipkin-reporter-java/issues/178
       return Encoding.JSON;
     }
 
-    @Override public int messageMaxBytes() {
+    @Override
+    public int messageMaxBytes() {
       return 5 * 1024 * 1024; // arbitrary
     }
 
-    @Override public int messageSizeInBytes(List<byte[]> list) {
+    @Override
+    public int messageSizeInBytes(List<byte[]> list) {
       return Encoding.JSON.listSizeInBytes(list);
     }
 
-    @Override public Call<Void> sendSpans(List<byte[]> encodedSpans) {
+    @Override
+    public Call<Void> sendSpans(List<byte[]> encodedSpans) {
       List<Span> spans = new ArrayList<>(encodedSpans.size());
       for (byte[] encodedSpan : encodedSpans) {
         Span v2Span = SpanBytesDecoder.JSON_V2.decodeOne(encodedSpan);
@@ -163,16 +176,19 @@ public class ZipkinSelfTracingConfiguration {
       return delegate().spanConsumer().accept(spans);
     }
 
-    @Override public CheckResult check() {
+    @Override
+    public CheckResult check() {
       return delegate().check();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
       // Avoid using the delegate to avoid eagerly loading the bean during initialization
       return "StorageComponent";
     }
 
-    @Override public void close() {
+    @Override
+    public void close() {
       // don't close delegate as we didn't open it!
     }
 
@@ -197,33 +213,41 @@ public class ZipkinSelfTracingConfiguration {
       this.factory = factory;
     }
 
-    @Override public void incrementMessages() {
+    @Override
+    public void incrementMessages() {
       delegate().incrementMessages();
     }
 
-    @Override public void incrementMessagesDropped(Throwable throwable) {
+    @Override
+    public void incrementMessagesDropped(Throwable throwable) {
       delegate().incrementMessagesDropped();
     }
 
-    @Override public void incrementSpans(int i) {
+    @Override
+    public void incrementSpans(int i) {
       delegate().incrementSpans(i);
     }
 
-    @Override public void incrementSpanBytes(int i) {
+    @Override
+    public void incrementSpanBytes(int i) {
       delegate().incrementBytes(i);
     }
 
-    @Override public void incrementMessageBytes(int i) {
+    @Override
+    public void incrementMessageBytes(int i) {
     }
 
-    @Override public void incrementSpansDropped(int i) {
+    @Override
+    public void incrementSpansDropped(int i) {
       delegate().incrementMessagesDropped();
     }
 
-    @Override public void updateQueuedSpans(int i) {
+    @Override
+    public void updateQueuedSpans(int i) {
     }
 
-    @Override public void updateQueuedBytes(int i) {
+    @Override
+    public void updateQueuedBytes(int i) {
     }
 
     /** Lazy lookup to avoid proxying */

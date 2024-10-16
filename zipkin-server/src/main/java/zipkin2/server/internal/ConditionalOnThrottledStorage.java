@@ -30,13 +30,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
   class ThrottledStorageCondition extends SpringBootCondition {
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata a) {
-      String throttleEnabled = context.getEnvironment()
-              .getProperty("zipkin.storage.throttle.enabled");
-
+      String throttleEnabled = context.getEnvironment().getProperty("zipkin.storage.throttle.enabled");
       if (!Boolean.valueOf(throttleEnabled)) {
         return ConditionOutcome.noMatch("zipkin.storage.throttle.enabled isn't true");
       }
-
       return ConditionOutcome.match();
     }
   }

@@ -31,7 +31,8 @@ public final class TracedCall<V> extends Call<V> {
     this.name = name;
   }
 
-  @Override public V execute() throws IOException {
+  @Override
+  public V execute() throws IOException {
     ScopedSpan span = tracer.startScopedSpan(name);
     try {
       return delegate.execute();
@@ -43,7 +44,8 @@ public final class TracedCall<V> extends Call<V> {
     }
   }
 
-  @Override public void enqueue(Callback<V> callback) {
+  @Override
+  public void enqueue(Callback<V> callback) {
     Span span = tracer.nextSpan().name(name).start();
     try {
       if (span.isNoop()) {
@@ -58,19 +60,23 @@ public final class TracedCall<V> extends Call<V> {
     }
   }
 
-  @Override public void cancel() {
+  @Override
+  public void cancel() {
     delegate.cancel();
   }
 
-  @Override public boolean isCanceled() {
+  @Override
+  public boolean isCanceled() {
     return delegate.isCanceled();
   }
 
-  @Override public Call<V> clone() {
+  @Override
+  public Call<V> clone() {
     return new TracedCall<>(tracer, delegate, name);
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "Traced(" + delegate + ")";
   }
 

@@ -50,32 +50,21 @@ public @interface ConditionalOnSelfTracing {
         return false;
       }
     }
-
     @Override
     public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata a) {
       if (!BRAVE_PRESENT) {
         return ConditionOutcome.noMatch("Brave must be in the classpath");
       }
-
-      String selfTracingEnabled = context.getEnvironment()
-          .getProperty("zipkin.self-tracing.enabled");
-
+      String selfTracingEnabled = context.getEnvironment().getProperty("zipkin.self-tracing.enabled");
       if (!Boolean.valueOf(selfTracingEnabled)) {
         return ConditionOutcome.noMatch("zipkin.self-tracing.enabled isn't true");
       }
-
-      String expectedStorageType = AnnotationAttributes.fromMap(
-          a.getAnnotationAttributes(ConditionalOnSelfTracing.class.getName())
-      ).getString("storageType");
-
+      String expectedStorageType = AnnotationAttributes.fromMap(a.getAnnotationAttributes(ConditionalOnSelfTracing.class.getName())).getString("storageType");
       if (expectedStorageType.equals("")) {
         return ConditionOutcome.match();
       }
-
       String storageType = context.getEnvironment().getProperty("zipkin.storage.type");
-      return expectedStorageType.equals(storageType) ?
-          ConditionOutcome.match() :
-          ConditionOutcome.noMatch(
+      return expectedStorageType.equals(storageType) ? ConditionOutcome.match() : ConditionOutcome.noMatch(
               "zipkin.storage.type was: " + storageType + " expected " + expectedStorageType);
     }
   }

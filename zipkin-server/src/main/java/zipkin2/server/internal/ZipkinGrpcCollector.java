@@ -35,7 +35,8 @@ import zipkin2.storage.StorageComponent;
 @ConditionalOnProperty(name = "zipkin.collector.grpc.enabled") // disabled by default
 final class ZipkinGrpcCollector {
 
-  @Bean ArmeriaServerConfigurator grpcCollectorConfigurator(StorageComponent storage,
+  @Bean
+  ArmeriaServerConfigurator grpcCollectorConfigurator(StorageComponent storage,
     CollectorSampler sampler, CollectorMetrics metrics) {
     CollectorMetrics grpcMetrics = metrics.forTransport("grpc");
     Collector collector = Collector.newBuilder(getClass())

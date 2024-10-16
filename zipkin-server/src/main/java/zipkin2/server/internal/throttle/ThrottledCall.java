@@ -46,8 +46,7 @@ final class ThrottledCall extends Call.Base<Void> {
    * This is only thrown in one location, and a stack trace starting from static initialization
    * isn't useful. Hence, we {@link Exceptions#clearTrace clear the trace}.
    */
-  static final RejectedExecutionException STORAGE_THROTTLE_MAX_CONCURRENCY =
-    clearTrace(new RejectedExecutionException("STORAGE_THROTTLE_MAX_CONCURRENCY reached"));
+  static final RejectedExecutionException STORAGE_THROTTLE_MAX_CONCURRENCY = clearTrace(new RejectedExecutionException("STORAGE_THROTTLE_MAX_CONCURRENCY reached"));
 
   static final Callback<Void> NOOP_CALLBACK = new Callback<Void>() {
     @Override public void onSuccess(Void value) {
@@ -79,7 +78,8 @@ final class ThrottledCall extends Call.Base<Void> {
    * is ok because in almost all cases, doing so would imply invoking {@link #enqueue(Callback)}
    * anyway.
    */
-  @Override protected Void doExecute() throws IOException {
+  @Override
+  protected Void doExecute() throws IOException {
     // Enqueue the call invocation on the executor and block until it completes.
     doEnqueue(NOOP_CALLBACK);
     if (!await(latch)) throw new InterruptedIOException();
@@ -96,9 +96,9 @@ final class ThrottledCall extends Call.Base<Void> {
   }
 
   // When handling enqueue, we don't block the calling thread. Any exception goes to the callback.
-  @Override protected void doEnqueue(Callback<Void> callback) {
-    Listener limiterListener =
-      limiter.acquire(null).orElseThrow(() -> STORAGE_THROTTLE_MAX_CONCURRENCY);
+  @Override
+  protected void doEnqueue(Callback<Void> callback) {
+    Listener limiterListener = limiter.acquire(null).orElseThrow(() -> STORAGE_THROTTLE_MAX_CONCURRENCY);
 
     limiterMetrics.requests.increment();
     EnqueueAndAwait enqueueAndAwait = new EnqueueAndAwait(callback, limiterListener);
@@ -115,11 +115,13 @@ final class ThrottledCall extends Call.Base<Void> {
     }
   }
 
-  @Override public Call<Void> clone() {
+  @Override
+  public Call<Void> clone() {
     return new ThrottledCall(delegate.clone(), executor, limiter, limiterMetrics, isOverCapacity);
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "Throttled(" + delegate + ")";
   }
 
@@ -143,7 +145,8 @@ final class ThrottledCall extends Call.Base<Void> {
      * handling already done in callbacks. For example, if shutting down, the storage layer would
      * also invoke {@link #onError(Throwable)}.
      */
-    @Override public void run() {
+    @Override
+    public void run() {
       if (delegate.isCanceled()) return;
       try {
         delegate.enqueue(this);
@@ -157,7 +160,8 @@ final class ThrottledCall extends Call.Base<Void> {
       }
     }
 
-    @Override public void onSuccess(Void value) {
+    @Override
+    public void onSuccess(Void value) {
       try {
         // usually we don't add metrics like this,
         // but for now it is helpful to sanity check acquired vs erred.
@@ -169,7 +173,8 @@ final class ThrottledCall extends Call.Base<Void> {
       }
     }
 
-    @Override public void onError(Throwable t) {
+    @Override
+    public void onError(Throwable t) {
       try {
         throwable = t; // catch the throwable in case the invocation is blocking (Call.execute())
         if (isOverCapacity.test(t)) {

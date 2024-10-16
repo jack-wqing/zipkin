@@ -63,8 +63,7 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
    * See {@link ThrottledCall#STORAGE_THROTTLE_MAX_CONCURRENCY} if unfamiliar with clearing trace on
    * exceptions only thrown from one spot.
    */
-  static final RejectedExecutionException STORAGE_THROTTLE_MAX_QUEUE_SIZE =
-    clearTrace(new RejectedExecutionException("STORAGE_THROTTLE_MAX_QUEUE_SIZE reached"));
+  static final RejectedExecutionException STORAGE_THROTTLE_MAX_QUEUE_SIZE = clearTrace(new RejectedExecutionException("STORAGE_THROTTLE_MAX_QUEUE_SIZE reached"));
 
   final StorageComponent delegate;
   final @Nullable Tracer tracer;
@@ -97,7 +96,8 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
       TimeUnit.DAYS,
       createQueue(maxQueueSize),
       new NamedThreadFactory("zipkin-throttle-pool") {
-        @Override public Thread newThread(Runnable runnable) {
+        @Override
+        public Thread newThread(Runnable runnable) {
           return super.newThread(new Runnable() {
             @Override public void run() {
               RequestContextCurrentTraceContext.setCurrentThreadNotRequestThread(true);
@@ -122,20 +122,24 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
     limiterMetrics = new LimiterMetrics(registry);
   }
 
-  @Override protected StorageComponent delegate() {
+  @Override
+  protected StorageComponent delegate() {
     return delegate;
   }
 
-  @Override public SpanConsumer spanConsumer() {
+  @Override
+  public SpanConsumer spanConsumer() {
     return new ThrottledSpanConsumer(this);
   }
 
-  @Override public void close() throws IOException {
+  @Override
+  public void close() throws IOException {
     executor.shutdownNow();
     delegate.close();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "Throttled{" + delegate.toString() + "}";
   }
 
@@ -145,7 +149,8 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
     final Limiter<Void> limiter;
     final LimiterMetrics limiterMetrics;
     final Predicate<Throwable> isOverCapacity;
-    @Nullable final Tracer tracer;
+    @Nullable
+    final Tracer tracer;
 
     ThrottledSpanConsumer(ThrottledStorageComponent throttledStorage) {
       this.delegate = throttledStorage.delegate.spanConsumer();
@@ -158,14 +163,14 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
       this.tracer = throttledStorage.tracer;
     }
 
-    @Override public Call<Void> accept(List<Span> spans) {
-      Call<Void> result = new ThrottledCall(
-        delegate.accept(spans), executor, limiter, limiterMetrics, isOverCapacity);
-
+    @Override
+    public Call<Void> accept(List<Span> spans) {
+      Call<Void> result = new ThrottledCall(delegate.accept(spans), executor, limiter, limiterMetrics, isOverCapacity);
       return tracer != null ? new TracedCall<>(tracer, result, "throttled-accept-spans") : result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
       return "Throttled(" + delegate + ")";
     }
   }
@@ -177,7 +182,6 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
       // 0 means we should be bounded but we can't create a queue with that size so use 1 instead.
       maxSize = 1;
     }
-
     return new LinkedBlockingQueue<>(maxSize);
   }
 
@@ -197,7 +201,8 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
      * {@code core} or an exception will be thrown.  So they have to be adjust appropriately
      * relative to the direction the size is going.
      */
-    @Override public synchronized void accept(Integer newValue) {
+    @Override
+    public synchronized void accept(Integer newValue) {
       int previousValue = executor.getCorePoolSize();
 
       int newValueInt = newValue;
@@ -217,7 +222,8 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
       return new NonLimitingLimiter(this);
     }
 
-    @Override protected Builder self() {
+    @Override
+    protected Builder self() {
       return this;
     }
   }
@@ -233,7 +239,8 @@ public final class ThrottledStorageComponent extends ForwardingStorageComponent 
       super(builder);
     }
 
-    @Override public Optional<Listener> acquire(Void context) {
+    @Override
+    public Optional<Listener> acquire(Void context) {
       return Optional.of(createListener());
     }
   }
