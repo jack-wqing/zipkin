@@ -1,7 +1,7 @@
 package zipkin2.clickhouse;
 
 import com.google.common.collect.Maps;
-import javafx.util.Pair;
+import javafx.beans.NamedArg;
 import org.apache.commons.lang3.StringUtils;
 import zipkin2.DependencyLink;
 import zipkin2.Endpoint;
@@ -205,6 +205,49 @@ public class ResultSetToSpanHelper {
       linkerList.add(DependencyLink.newBuilder().parent(k.getKey()).child(k.getValue()).callCount(v).build());
     });
     return linkerList;
+  }
+
+  static class Pair<K,V> {
+
+    private K key;
+
+    public K getKey() { return key; }
+
+    private V value;
+
+    public V getValue() { return value; }
+
+    public Pair(@NamedArg("key") K key, @NamedArg("value") V value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return key + "=" + value;
+    }
+
+    @Override
+    public int hashCode() {
+      // name's hashCode is multiplied by an arbitrary prime number (13)
+      // in order to make sure there is a difference in the hashCode between
+      // these two parameters:
+      //  name: a  value: aa
+      //  name: aa value: a
+      return key.hashCode() * 13 + (value == null ? 0 : value.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o instanceof Pair) {
+        Pair pair = (Pair) o;
+        if (key != null ? !key.equals(pair.key) : pair.key != null) return false;
+        if (value != null ? !value.equals(pair.value) : pair.value != null) return false;
+        return true;
+      }
+      return false;
+    }
   }
 
 }
