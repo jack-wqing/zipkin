@@ -80,11 +80,10 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("log.file.path")) + Constants.SINGLE_QUOTA + Constants.COMMA);
   }
   private void handleLocalEndpoint(Endpoint endpoint, StringBuilder valueSb) {
-    if (endpoint != null) {
-      valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.ipv4()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-      valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.serviceName()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-      valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.port() == null ? "" : endpoint.port().toString()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    }
+    endpoint = Objects.isNull(endpoint) ? Endpoint.newBuilder().build() : endpoint;
+    valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.ipv4()) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.serviceName()) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.port() == null ? "" : endpoint.port().toString()) + Constants.SINGLE_QUOTA + Constants.COMMA);
   }
 
   private String strValue(String value) {
