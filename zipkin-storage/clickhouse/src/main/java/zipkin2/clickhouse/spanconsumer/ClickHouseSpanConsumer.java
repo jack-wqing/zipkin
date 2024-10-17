@@ -27,7 +27,7 @@ public class ClickHouseSpanConsumer implements SpanConsumer {
     }
     SpansQueueManager.add(spans);
     //判断数据量进行保存
-    schedulerSpanPersistence.runInsert();
+    schedulerSpanPersistence.runInsert(false);
     return null;
   }
 

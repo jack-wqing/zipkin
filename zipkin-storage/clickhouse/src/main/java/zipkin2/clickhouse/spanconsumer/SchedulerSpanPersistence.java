@@ -8,6 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @Author:liuwenqing
@@ -15,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @Description:
  **/
 public class SchedulerSpanPersistence {
+
+  public static final Logger logger = Logger.getLogger(SchedulerSpanPersistence.class.getName());
 
   private static final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
@@ -31,37 +35,42 @@ public class SchedulerSpanPersistence {
   }
 
   public void start(){
+    logger.info("SchedulerSpanPersistence starting");
     scheduledExecutorService.scheduleWithFixedDelay(new BatchAddTask(), 1, 1, TimeUnit.SECONDS);
   }
 
   class BatchAddTask implements Runnable {
     @Override
     public void run() {
-      if (!setRunning()) {
-        //表示插入已经在执行，直接返回
-        return;
-      }
       long lastMills = SpansQueueManager.lastWriteMills.get();
       //表示已经距离上次小于1s,则本次不在执行
       if ((System.currentTimeMillis() - lastMills) < 1000) {
-        setNoRunning();
         return;
       }
-      int size = SpansQueueManager.size();
-      if (size >= batchSize) {
-        size = batchSize;
-      }
-      //每个1秒，执行一次保存
-      doInsert(size);
       //如果剩余的数据量还是大于设置的batchSize数量，则在进行保存
-      runInsert();
-      setNoRunning();
+      runInsert(true);
     }
   }
 
-  public final void runInsert() {
-    while (SpansQueueManager.size() >= batchSize) {
-      doInsert(batchSize);
+  public final void runInsert(boolean scheduling) {
+    if (!setRunning()) {
+      return;
+    }
+    try {
+      if (scheduling) {
+        int size = SpansQueueManager.size();
+        if (size > batchSize) {
+          size = batchSize;
+        }
+        doInsert(size);
+      }
+      while (SpansQueueManager.size() >= batchSize) {
+        doInsert(batchSize);
+      }
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "batch save clickhouse error", e);
+    } finally {
+      setNoRunning();
     }
   }
 
@@ -72,6 +81,7 @@ public class SchedulerSpanPersistence {
     List<Span> spans = SpansQueueManager.partSpans(size);
     ExecuteWriteExecutor executor = new ExecuteWriteExecutor(dataSource, spanTable, spans);
     executor.execute();
+    SpansQueueManager.lastWriteMills.set(System.currentTimeMillis());
   }
 
 
