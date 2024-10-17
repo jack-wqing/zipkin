@@ -210,3 +210,7 @@ Helm charts are available at https://openzipkin.github.io/zipkin. See [charts](.
 ### Javadocs
 https://zipkin.io/zipkin contains versioned folders with JavaDocs published on each (non-PR) build, as well
 as releases.
+
+```angular2html
+原始: zipkin得新消息，json序列化必须是数组的格式; 修改支持对象的格式，每个对象一个span
+```
