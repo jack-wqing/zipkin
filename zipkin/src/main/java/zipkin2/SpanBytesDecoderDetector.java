@@ -83,7 +83,7 @@ public final class SpanBytesDecoderDetector {
     byte first = spans.get(spans.position());
     if (first != 12 /* List[ThriftSpan] */
         && first != 11 /* openzipkin/zipkin-reporter-java#133 */
-        && !protobuf3(spans) && first != '[' && first != '{') {
+        && !protobuf3(spans) && first != '[') {
       throw new IllegalArgumentException("Expected json, proto3 or thrift list encoding");
     }
     return decoder;
