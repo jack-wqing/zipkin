@@ -47,7 +47,7 @@ public class BatchSql {
     valueSb.append(longValue(span.timestamp()) + Constants.COMMA);
     handleTag(span, valueSb);
     valueSb.append(Constants.SINGLE_QUOTA +  DateFormatUtils.format(new Date(longValue(span.timestamp()) / 1000), Constants.DATE_FORMAT) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA +"" + Constants.SINGLE_QUOTA);
+    valueSb.append(Constants.SINGLE_QUOTA +"");
     valueSb.append(Constants.RIGHT_BRACKET);
     return valueSb.toString();
   }
@@ -65,18 +65,18 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("http.method")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("CatMessageId")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("http.path")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("http.request.size")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("http.response.size")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("http.status.code")) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("http.request.size")) + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("http.response.size")) + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("http.status.code")) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("local.ipv4")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("peer.ipv4")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("peer.service")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("peer.port")) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("peer.port")) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("peer.hostname")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("peer.ipv6")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("process.id")) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("process.id")) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("span.kind")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strLongValue(tags.get("worker.id")) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(strLongValue(tags.get("worker.id")) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("log.file.path")) + Constants.SINGLE_QUOTA + Constants.COMMA);
   }
   private void handleLocalEndpoint(Endpoint endpoint, StringBuilder valueSb) {
