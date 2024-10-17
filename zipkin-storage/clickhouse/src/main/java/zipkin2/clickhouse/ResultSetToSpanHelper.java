@@ -174,7 +174,7 @@ public class ResultSetToSpanHelper {
       long count = resultSet.getLong("count");
       serviceName = Objects.isNull(serviceName) ? "" : serviceName;
       remoteServiceName = Objects.isNull(remoteServiceName) ? "" : remoteServiceName;
-      Span.Kind kind = Span.Kind.valueOf(kindStr);
+      Span.Kind kind = StringUtils.isBlank(kindStr) ? null:  Span.Kind.valueOf(kindStr);
       if (kind == null) {
         // Treat unknown type of span as a client span if we know both sides
         if (serviceName != null && remoteServiceName != null) {
