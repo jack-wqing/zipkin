@@ -165,6 +165,14 @@ public class Collector { // not final for mock
    * @param serialized not empty message
    */
   public void acceptSpans(byte[] serialized, Callback<Void> callback) {
+    if (serialized[0] != '[') {
+      byte[] perfectSerialized = new byte[serialized.length + 2];
+      perfectSerialized[0] = '[';
+      for (int i = 0; i < serialized.length; i++) {
+        perfectSerialized[++i] = serialized[i];
+      }
+      perfectSerialized[perfectSerialized.length - 1] = ']';
+    }
     BytesDecoder<Span> decoder;
     try {
       decoder = SpanBytesDecoderDetector.decoderForListMessage(serialized);
