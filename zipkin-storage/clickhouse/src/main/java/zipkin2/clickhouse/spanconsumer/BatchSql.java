@@ -83,7 +83,7 @@ public class BatchSql {
     if (endpoint != null) {
       valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.ipv4()) + Constants.SINGLE_QUOTA + Constants.COMMA);
       valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.serviceName()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-      valueSb.append(Constants.SINGLE_QUOTA + integerValue(endpoint.port()) + Constants.SINGLE_QUOTA + Constants.COMMA);
+      valueSb.append(Constants.SINGLE_QUOTA + strValue(endpoint.port() == null ? "" : endpoint.port().toString()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     }
   }
 
