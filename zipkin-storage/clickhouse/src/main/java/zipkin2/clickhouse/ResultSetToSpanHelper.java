@@ -65,7 +65,9 @@ public class ResultSetToSpanHelper {
       if (id != null && !id.equals("")) {
         spanBuilder.id(id);
       }
-      spanBuilder.kind(Span.Kind.valueOf(kind));
+      if (StringUtils.isNotBlank(kind)) {
+        spanBuilder.kind(Span.Kind.valueOf(kind));
+      }
       if (duration != null) {
         spanBuilder.duration(duration);
       }
