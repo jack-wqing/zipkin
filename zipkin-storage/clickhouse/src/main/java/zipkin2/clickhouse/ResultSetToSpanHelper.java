@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ResultSetToSpanHelper {
 
@@ -171,9 +172,8 @@ public class ResultSetToSpanHelper {
       String serviceName = resultSet.getString("localEndpointServiceName");
       String remoteServiceName = resultSet.getString("remoteEndpointServiceName");
       long count = resultSet.getLong("count");
-      if (StringUtils.isBlank(serviceName) || StringUtils.isBlank(remoteServiceName)) {
-        continue;
-      }
+      serviceName = Objects.isNull(serviceName) ? "" : serviceName;
+      remoteServiceName = Objects.isNull(remoteServiceName) ? "" : remoteServiceName;
       Span.Kind kind = Span.Kind.valueOf(kindStr);
       if (kind == null) {
         // Treat unknown type of span as a client span if we know both sides
