@@ -41,7 +41,7 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.traceId()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.parentId()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.id()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strValue(span.kind().name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA + strValue(span.kind() == null ? null : span.kind().name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(longValue(span.duration()) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(longValue(span.timestamp()) + Constants.COMMA);
