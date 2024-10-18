@@ -3,6 +3,7 @@ package zipkin2.clickhouse.spanconsumer;
 import com.clickhouse.jdbc.ClickHouseDataSource;
 import zipkin2.Span;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -75,7 +76,11 @@ public class SchedulerSpanPersistence {
     Span[] spans = new Span[size];
     SpansQueueManager.partSpans(spans);
     ExecuteWriteExecutor executor = new ExecuteWriteExecutor(dataSource, spanTable, spans);
-    executorService.execute(() -> executor.execute());
+    if (Objects.isNull(executorService)) {
+      executor.execute();
+    } else {
+      executorService.execute(() -> executor.execute());
+    }
     SpansQueueManager.lastWriteMills.set(System.currentTimeMillis());
   }
 
