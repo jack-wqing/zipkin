@@ -38,10 +38,11 @@ public class Constants {
     + "where time >= ? AND time <= ? AND remoteEndpointServiceName NOT LIKE '%:%' AND localEndpointServiceName NOT LIKE '%:%' "
     + "group by kind,localEndpointServiceName,remoteEndpointServiceName";
 
-  public static final String INSERT_SQL = "INSERT INTO %s (traceId,parentId,id,kind,duration,name,timestamp,status,timestampMillis,localEndpointIpv4,"
+  public static final String INSERT_SQL = "INSERT INTO %s SETTINGS async_insert=1, wait_for_async_insert=1 (traceId,parentId,id,kind,duration,name,timestamp,status,timestampMillis,localEndpointIpv4,"
     + "localEndpointServiceName,localEndpointPort,remoteEndpointIpv4,remoteEndpointServiceName,remoteEndpointPort,tagsRpcMethod,tagsRpcService,tagsAppname,"
     + "tagsComponent,tagsHttpUrl,tagsHttpMethod,tagsCatMessageId,tagsHttpPath,tagsHttpRequestSize,tagsHttpResponseSize,tagsHttpStatusCode,tagsLocalIpv4,"
     + "tagsPeerIpv4,tagsPeerService,tagsPeerPort,tagsPeerHostname,tagsPeerIpv6,tagsProcessId,tagsSpanKind,tagsWorkerId,logFilePath,time,tagsSql) VALUES ";
 
+  public static final String ASYNC_INSERT_SUFFIX = " SETTINGS async_insert=1";
 
 }

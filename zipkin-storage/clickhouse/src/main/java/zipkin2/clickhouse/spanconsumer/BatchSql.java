@@ -23,16 +23,15 @@ public class BatchSql {
   }
   public String generate(Span[] data) {
     StringBuffer sqlValueSb = new StringBuffer();
-    Arrays.stream(data).parallel().filter(Objects::nonNull).forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
+    Arrays.stream(data).parallel().filter(Objects::nonNull)
+      .filter(span -> StringUtils.isNotBlank(span.id()))
+      .forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
     if (sqlValueSb.length() > 0) {
-      return startSql + sqlValueSb.substring(1);
+      return startSql + sqlValueSb.substring(1) + Constants.ASYNC_INSERT_SUFFIX;
     }
     return Constants.BLANK;
   }
   private String span(Span span) {
-    if (Objects.isNull(span) || StringUtils.isBlank(span.id())) {
-      return "";
-    }
     StringBuilder valueSb = new StringBuilder(Constants.LEFT_BRACKET);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.traceId()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.parentId()) + Constants.SINGLE_QUOTA + Constants.COMMA);
@@ -116,7 +115,7 @@ public class BatchSql {
       return  "";
     }
     return value.replaceAll("'", "").replaceAll(" ", "")
-        .replaceAll("\\n", "").replaceAll("\"", "");
+      .replaceAll("\\n", "").replaceAll("\"", "");
   }
 
 }
