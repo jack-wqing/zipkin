@@ -17,6 +17,8 @@ public class ZipkinClickHouseStorageProperties implements Serializable {
   private int batchSize = 100000;
 
   private int parallelWriteSize = 1;
+
+  private int schedulingTime = 1;
   public String getUrl() {
     return url;
   }
@@ -71,5 +73,13 @@ public class ZipkinClickHouseStorageProperties implements Serializable {
 
   public void setParallelWriteSize(int parallelWriteSize) {
     this.parallelWriteSize = parallelWriteSize;
+  }
+
+  public int getSchedulingTime() {
+    return schedulingTime;
+  }
+
+  public void setSchedulingTime(int schedulingTime) {
+    this.schedulingTime = schedulingTime;
   }
 }

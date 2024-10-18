@@ -65,6 +65,7 @@ public class ZipkinClickHouseStorageConfiguration {
       .namesLookback(clickHouseStorageProperties.getNamesLookback())
       .batchSize(clickHouseStorageProperties.getBatchSize())
       .parallelWriteSize(clickHouseStorageProperties.getParallelWriteSize())
+      .schedulingTime(clickHouseStorageProperties.getSchedulingTime())
       .strictTraceId(strictTraceId)
       .searchEnabled(searchEnabled)
       .autocompleteKeys(autocompleteKeys)

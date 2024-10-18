@@ -184,8 +184,9 @@ zipkin:
       traceTable: ${CH_TRACE_TABLE:zipkin_spans_trace}
       # 需要服务名的时间窗口 1d
       namesLookback: ${CH_NAMES_LOOK_BACK:86400000}
-      batchSize: ${CH_BATCH_SIZE:100000}
+      batchSize: ${CH_BATCH_SIZE:10000}
       parallelWriteSize: ${CH_PARALLEL_WRITE_SIZE:2}
+      schedulingTime: ${CH_SCHEDULING_TIME:1}
   ui:
     enabled: ${QUERY_ENABLED:true}
     ## Values below here are mapped to ZipkinUiProperties, served as /config.json

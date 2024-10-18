@@ -21,17 +21,20 @@ public class SchedulerSpanPersistence {
   public static final Logger logger = Logger.getLogger(SchedulerSpanPersistence.class.getName());
 
   private static final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
-
+  // 并行写入
   private static ExecutorService executorService = null;
 
   final ClickHouseDataSource dataSource;
   final String spanTable;
   final int batchSize;
 
-  public SchedulerSpanPersistence(ClickHouseDataSource dataSource, String spanTable, int batchSize, int parallelWriteSize) {
+  private int schedulingTime = 1;
+
+  public SchedulerSpanPersistence(ClickHouseDataSource dataSource, String spanTable, int batchSize, int parallelWriteSize, int schedulingTime) {
     this.dataSource = dataSource;
     this.spanTable = spanTable;
     this.batchSize = batchSize;
+    this.schedulingTime = schedulingTime;
     if (parallelWriteSize > 1) {
       executorService = Executors.newFixedThreadPool(parallelWriteSize);
     }
@@ -39,7 +42,7 @@ public class SchedulerSpanPersistence {
 
   public void start(){
     logger.info("SchedulerSpanPersistence starting");
-    scheduledExecutorService.scheduleWithFixedDelay(new BatchAddTask(), 1, 1, TimeUnit.SECONDS);
+    scheduledExecutorService.scheduleWithFixedDelay(new BatchAddTask(), schedulingTime, schedulingTime, TimeUnit.SECONDS);
   }
 
   class BatchAddTask implements Runnable {
