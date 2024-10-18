@@ -62,7 +62,7 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("appname")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("component")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("http.url")) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("http.method")) + Constants.SINGLE_QUOTA + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA + strHttpMethodValue(tags.get("http.method")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("CatMessageId")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(tags.get("http.path")) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(strLongValue(tags.get("http.request.size")) + Constants.COMMA);
@@ -112,6 +112,15 @@ public class BatchSql {
       return Integer.valueOf(0);
     }
     return value;
+  }
+
+  private String strHttpMethodValue(String value) {
+
+    if (Objects.isNull(value)) {
+      return  "";
+    }
+    return value.replaceAll("'", "").replaceAll(" ", "")
+      .replaceAll("\\n", "").replaceAll("\"", "");
   }
 
 }
