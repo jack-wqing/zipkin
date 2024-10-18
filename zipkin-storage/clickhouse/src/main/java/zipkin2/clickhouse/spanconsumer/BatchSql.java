@@ -22,7 +22,7 @@ public class BatchSql {
     this.startSql = startSql;
   }
   public String generate(Span[] data) {
-    StringBuilder sqlValueSb = new StringBuilder();
+    StringBuffer sqlValueSb = new StringBuffer();
     Arrays.stream(data).parallel().filter(Objects::nonNull).forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
     if (sqlValueSb.length() > 0) {
       return startSql + sqlValueSb.substring(1);
