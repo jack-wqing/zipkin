@@ -2,7 +2,6 @@ package zipkin2.clickhouse.spanconsumer;
 
 import zipkin2.Span;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -33,20 +32,18 @@ public class SpansQueueManager {
     }
   }
 
-  public static final List<Span> partSpans(int size) {
+  public static final void partSpans(Span[] spans) {
     if (queue.isEmpty()) {
-      return Collections.emptyList();
+     return;
     }
-    LinkedList<Span> result = new LinkedList<>();
     synchronized (lock) {
-      for (int i = 0; i < size; i++) {
+      for (int i = 0; i < spans.length; i++) {
         if (queue.isEmpty()) {
           break;
         }
-        result.add(queue.pop());
+        spans[i] = queue.pop();
       }
     }
-    return result;
   }
 
 }

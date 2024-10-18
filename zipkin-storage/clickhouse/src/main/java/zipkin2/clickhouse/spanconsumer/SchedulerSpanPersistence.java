@@ -3,12 +3,11 @@ package zipkin2.clickhouse.spanconsumer;
 import com.clickhouse.jdbc.ClickHouseDataSource;
 import zipkin2.Span;
 
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -22,16 +21,19 @@ public class SchedulerSpanPersistence {
 
   private static final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
-  private static final AtomicBoolean runInsert = new AtomicBoolean(false);
+  private static ExecutorService executorService = null;
 
   final ClickHouseDataSource dataSource;
   final String spanTable;
   final int batchSize;
 
-  public SchedulerSpanPersistence(ClickHouseDataSource dataSource, String spanTable, int batchSize) {
+  public SchedulerSpanPersistence(ClickHouseDataSource dataSource, String spanTable, int batchSize, int parallelWriteSize) {
     this.dataSource = dataSource;
     this.spanTable = spanTable;
     this.batchSize = batchSize;
+    if (parallelWriteSize > 1) {
+      executorService = Executors.newFixedThreadPool(parallelWriteSize);
+    }
   }
 
   public void start(){
@@ -53,24 +55,15 @@ public class SchedulerSpanPersistence {
   }
 
   public final void runInsert(boolean scheduling) {
-    if (!setRunning()) {
-      return;
+    if (scheduling) {
+      int size = SpansQueueManager.size();
+      if (size > batchSize) {
+        size = batchSize;
+      }
+      doInsert(size);
     }
-    try {
-      if (scheduling) {
-        int size = SpansQueueManager.size();
-        if (size > batchSize) {
-          size = batchSize;
-        }
-        doInsert(size);
-      }
-      while (SpansQueueManager.size() >= batchSize) {
-        doInsert(batchSize);
-      }
-    } catch (Exception e) {
-      logger.log(Level.WARNING, "batch save clickhouse error", e);
-    } finally {
-      setNoRunning();
+    while (SpansQueueManager.size() >= batchSize) {
+      doInsert(batchSize);
     }
   }
 
@@ -78,20 +71,12 @@ public class SchedulerSpanPersistence {
     if (size == 0) {
       return;
     }
-    List<Span> spans = SpansQueueManager.partSpans(size);
+    logger.info("current size:" + size);
+    Span[] spans = new Span[size];
+    SpansQueueManager.partSpans(spans);
     ExecuteWriteExecutor executor = new ExecuteWriteExecutor(dataSource, spanTable, spans);
-    executor.execute();
+    executorService.execute(() -> executor.execute());
     SpansQueueManager.lastWriteMills.set(System.currentTimeMillis());
   }
-
-
-  private static boolean setRunning() {
-    return runInsert.compareAndSet(false, true);
-  }
-
-  private static boolean setNoRunning() {
-    return runInsert.compareAndSet(true, false);
-  }
-
 
 }

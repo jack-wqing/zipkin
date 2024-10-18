@@ -44,6 +44,8 @@ public class ClickHouseStorage extends StorageComponent {
     private long namesLookback;
     public int batchSize;
 
+    public int parallelWriteSize;
+
     @Override
     public Builder strictTraceId(boolean strictTraceId) {
       this.strictTraceId = strictTraceId;
@@ -96,6 +98,11 @@ public class ClickHouseStorage extends StorageComponent {
       return this;
     }
 
+    public Builder parallelWriteSize(int parallelWriteSize) {
+      this.parallelWriteSize = parallelWriteSize;
+      return this;
+    }
+
     @Override
     public StorageComponent build() {
       return new ClickHouseStorage(this);
@@ -130,7 +137,7 @@ public class ClickHouseStorage extends StorageComponent {
     spanTable = builder.spanTable;
     traceTable = builder.traceTable;
     namesLookback = builder.namesLookback;
-    schedulerSpanPersistence = new SchedulerSpanPersistence(dataSource, spanTable, builder.batchSize);
+    schedulerSpanPersistence = new SchedulerSpanPersistence(dataSource, spanTable, builder.batchSize, builder.parallelWriteSize);
     schedulerSpanPersistence.start();
   }
 

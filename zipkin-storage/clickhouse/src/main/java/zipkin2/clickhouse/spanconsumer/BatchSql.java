@@ -1,14 +1,13 @@
 package zipkin2.clickhouse.spanconsumer;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import zipkin2.Endpoint;
 import zipkin2.Span;
 import zipkin2.clickhouse.Constants;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,12 +21,9 @@ public class BatchSql {
   public BatchSql(String startSql) {
     this.startSql = startSql;
   }
-  public String generate(List<Span> data) {
-    if (CollectionUtils.isEmpty(data)) {
-      return Constants.BLANK;
-    }
+  public String generate(Span[] data) {
     StringBuilder sqlValueSb = new StringBuilder();
-    data.forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
+    Arrays.stream(data).parallel().filter(Objects::nonNull).forEach(span -> sqlValueSb.append(Constants.COMMA + span(span)));
     if (sqlValueSb.length() > 0) {
       return startSql + sqlValueSb.substring(1);
     }
@@ -120,7 +116,7 @@ public class BatchSql {
       return  "";
     }
     return value.replaceAll("'", "").replaceAll(" ", "")
-      .replaceAll("\\n", "").replaceAll("\"", "");
+        .replaceAll("\\n", "").replaceAll("\"", "");
   }
 
 }
