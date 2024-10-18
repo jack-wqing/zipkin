@@ -39,7 +39,7 @@ public class BatchSql {
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.kind() == null ? null : span.kind().name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append(longValue(span.duration()) + Constants.COMMA);
     valueSb.append(Constants.SINGLE_QUOTA + strValue(span.name()) + Constants.SINGLE_QUOTA + Constants.COMMA);
-    valueSb.append(longValue(span.timestamp()) + Constants.COMMA);
+    valueSb.append(Constants.SINGLE_QUOTA + longValue(span.timestamp()) + Constants.SINGLE_QUOTA + Constants.COMMA);
     handleTag(span, valueSb);
     valueSb.append(Constants.SINGLE_QUOTA +  DateFormatUtils.format(new Date(longValue(span.timestamp()) / 1000), Constants.DATE_FORMAT) + Constants.SINGLE_QUOTA + Constants.COMMA);
     valueSb.append("''");
