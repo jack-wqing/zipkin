@@ -1,64 +1,78 @@
 package zipkin2.clickhouse;
 
+import com.clickhouse.client.api.data_formats.ClickHouseBinaryFormatReader;
 import com.google.common.collect.Maps;
 import javafx.beans.NamedArg;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import zipkin2.DependencyLink;
 import zipkin2.Endpoint;
 import zipkin2.Span;
 
-import java.sql.ResultSet;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ResultSetToSpanHelper {
 
-  public static final List<Span> resultSetToSpan(ResultSet resultSet) throws SQLException {
+  private static final Logger logger = Logger.getLogger(ResultSetToSpanHelper.class.getName());
+
+  public static final List<Span> resultSetToSpan(ClickHouseBinaryFormatReader reader) throws SQLException {
     List<Span> spans = new ArrayList<>();
-    while (resultSet.next()) {
+    while (reader.hasNext()) {
+      Map<String, Object> next = reader.next();
+      if (MapUtils.isEmpty(next)) {
+        continue;
+      }
       Span.Builder spanBuilder = Span.newBuilder();
-      String traceId = resultSet.getString("traceId");
-      String parentId = resultSet.getString("parentId");
-      String id = resultSet.getString("id");
-      String kind = resultSet.getString("kind");
-      Long duration = resultSet.getLong("duration");
-      String name = resultSet.getString("name");
-      String timestamp = resultSet.getString("timestamp");
-      String status = resultSet.getString("status");
-      Long timestampMillis = resultSet.getLong("timestampMillis");
-      String localEndpointIpv4 = resultSet.getString("localEndpointIpv4");
-      String localEndpointServiceName = resultSet.getString("localEndpointServiceName");
-      String localEndpointPort = resultSet.getString("localEndpointPort");
-      String remoteEndpointIpv4 = resultSet.getString("remoteEndpointIpv4");
-      String remoteEndpointServiceName = resultSet.getString("remoteEndpointServiceName");
-      String remoteEndpointPort = resultSet.getString("remoteEndpointPort");
-      String tagsRpcMethod = resultSet.getString("tagsRpcMethod");
-      String tagsRpcService = resultSet.getString("tagsRpcService");
-      String tagsAppname = resultSet.getString("tagsAppname");
-      String tagsComponent = resultSet.getString("tagsComponent");
-      String tagsHttpUrl = resultSet.getString("tagsHttpUrl");
-      String tagsHttpMethod = resultSet.getString("tagsHttpMethod");
+      String traceId = findValue("traceId", () -> reader.getString("traceId"));
+      if (StringUtils.isBlank(traceId)) {
+        continue;
+      }
+      String parentId = findValue("parentId", () -> reader.getString("parentId"));
+      String id = findValue("id", () -> reader.getString("id"));
+      String kind = findValue("kind", () -> reader.getString("kind"));
+      Long duration = findValue("duration", () -> reader.getLong("duration"));
+      String name = findValue("name", () -> reader.getString("name"));
+      String timestamp = findValue("timestamp", () -> reader.getString("timestamp"));
+      String status = findValue("status", () -> reader.getString("status"));
+      BigInteger timestampMillis = findValue("timestampMillis", () -> reader.getBigInteger("timestampMillis"));
+      String localEndpointIpv4 = findValue("localEndpointIpv4", () -> reader.getString("localEndpointIpv4"));
+      String localEndpointServiceName = findValue("localEndpointServiceName", () -> reader.getString("localEndpointServiceName"));
+      String localEndpointPort = findValue("localEndpointPort", () -> reader.getString("localEndpointPort"));
+      String remoteEndpointIpv4 = findValue("remoteEndpointIpv4", () -> reader.getString("remoteEndpointIpv4"));
+      String remoteEndpointServiceName = findValue("remoteEndpointServiceName", () -> reader.getString("remoteEndpointServiceName"));
+      String remoteEndpointPort = findValue("remoteEndpointPort", () -> reader.getString("remoteEndpointPort"));
+      String tagsRpcMethod = findValue("tagsRpcMethod", () -> reader.getString("tagsRpcMethod"));
+      String tagsRpcService = findValue("tagsRpcService", () -> reader.getString("tagsRpcService"));
+      String tagsAppname = findValue("tagsAppname", () -> reader.getString("tagsAppname"));
+      String tagsComponent = findValue("tagsComponent", () -> reader.getString("tagsComponent"));
+      String tagsHttpUrl = findValue("tagsHttpUrl", () -> reader.getString("tagsHttpUrl"));
+      String tagsHttpMethod = findValue("tagsHttpMethod", () -> reader.getString("tagsHttpMethod"));
       if (timestampMillis != null) {
         spanBuilder.putTag("timestampMillis", timestampMillis.toString());
       }
-      String tagsCatMessageId = resultSet.getString("tagsCatMessageId");
-      String tagsHttpPath = resultSet.getString("tagsHttpPath");
-      Integer tagsHttpRequestSize = resultSet.getInt("tagsHttpRequestSize");
-      Integer tagsHttpResponseSize = resultSet.getInt("tagsHttpResponseSize");
-      Integer tagsHttpStatusCode = resultSet.getInt("tagsHttpStatusCode");
-      String tagsLocalIpv4 = resultSet.getString("tagsLocalIpv4");
-      String tagsPeerIpv4 = resultSet.getString("tagsPeerIpv4");
-      String tagsPeerService = resultSet.getString("tagsPeerService");
-      Integer tagsPeerPort = resultSet.getInt("tagsPeerPort");
-      String tagsPeerHostname = resultSet.getString("tagsPeerHostname");
-      String tagsPeerIpv6 = resultSet.getString("tagsPeerIpv6");
-      Integer tagsProcessId = resultSet.getInt("tagsProcessId");
-      String tagsSpanKind = resultSet.getString("tagsSpanKind");
-      Integer tagsWorkerId = resultSet.getInt("tagsWorkerId");
-      String logFilePath = resultSet.getString("logFilePath");
+      String tagsCatMessageId = findValue("tagsCatMessageId", () -> reader.getString("tagsCatMessageId"));
+      String tagsHttpPath = findValue("tagsHttpPath", () -> reader.getString("tagsHttpPath"));
+      Long tagsHttpRequestSize = findValue("tagsHttpPath", () -> reader.getLong("tagsHttpRequestSize"));
+      Long tagsHttpResponseSize = findValue("tagsHttpResponseSize", () -> reader.getLong("tagsHttpResponseSize"));
+      Long tagsHttpStatusCode = findValue("tagsHttpStatusCode", () -> reader.getLong("tagsHttpStatusCode"));
+      String tagsLocalIpv4 = findValue("tagsLocalIpv4", () -> reader.getString("tagsLocalIpv4"));
+      String tagsPeerIpv4 = findValue("tagsPeerIpv4", () -> reader.getString("tagsPeerIpv4"));
+      String tagsPeerService = findValue("tagsPeerService", () -> reader.getString("tagsPeerService"));
+      Long tagsPeerPort = findValue("tagsPeerPort", () -> reader.getLong("tagsPeerPort"));
+      String tagsPeerHostname = findValue("tagsPeerHostname", () -> reader.getString("tagsPeerHostname"));
+      String tagsPeerIpv6 = findValue("tagsPeerIpv6", () -> reader.getString("tagsPeerIpv6"));
+      Long tagsProcessId = findValue("tagsProcessId", () -> reader.getLong("tagsProcessId"));
+      String tagsSpanKind = findValue("tagsSpanKind", () -> reader.getString("tagsSpanKind"));
+      Long tagsWorkerId = findValue("tagsWorkerId", () -> reader.getLong("tagsWorkerId"));
+      String logFilePath = findValue("logFilePath", () -> reader.getString("logFilePath"));
       spanBuilder.traceId(traceId);
       if (parentId != null && !parentId.equals("")) {
         spanBuilder.parentId(parentId);
@@ -164,14 +178,15 @@ public class ResultSetToSpanHelper {
     return spans;
   }
 
-  public static final List<DependencyLink> resultSetToSpanDependency(ResultSet resultSet) throws SQLException {
+  public static final List<DependencyLink> resultSetToSpanDependency(ClickHouseBinaryFormatReader reader) throws SQLException {
     List<DependencyLink> linkerList = new ArrayList<>();
     Map<Pair<String, String>, Long> linkerMap = Maps.newHashMap();
-    while (resultSet.next()) {
-      String kindStr = resultSet.getString("kind");
-      String serviceName = resultSet.getString("localEndpointServiceName");
-      String remoteServiceName = resultSet.getString("remoteEndpointServiceName");
-      long count = resultSet.getLong("count");
+    while (reader.hasNext()) {
+      reader.next();
+      String kindStr = reader.getString("kind");
+      String serviceName = reader.getString("localEndpointServiceName");
+      String remoteServiceName = reader.getString("remoteEndpointServiceName");
+      BigInteger count = reader.getBigInteger("count");
       serviceName = Objects.isNull(serviceName) ? "" : serviceName;
       remoteServiceName = Objects.isNull(remoteServiceName) ? "" : remoteServiceName;
       Span.Kind kind = StringUtils.isBlank(kindStr) ? null:  Span.Kind.valueOf(kindStr);
@@ -201,7 +216,7 @@ public class ResultSetToSpanHelper {
       }
       Pair<String, String> keyPair = new Pair<>(parent, child);
       Long sumCount = linkerMap.getOrDefault(keyPair, 0L);
-      linkerMap.put(keyPair, sumCount + count);
+      linkerMap.put(keyPair, sumCount + count.longValue());
     }
     linkerMap.forEach((k, v) -> {
       linkerList.add(DependencyLink.newBuilder().parent(k.getKey()).child(k.getValue()).callCount(v).build());
@@ -244,12 +259,21 @@ public class ResultSetToSpanHelper {
       if (this == o) return true;
       if (o instanceof Pair) {
         Pair pair = (Pair) o;
-        if (key != null ? !key.equals(pair.key) : pair.key != null) return false;
-        if (value != null ? !value.equals(pair.value) : pair.value != null) return false;
+        if (!Objects.equals(key, pair.key)) return false;
+        if (!Objects.equals(value, pair.value)) return false;
         return true;
       }
       return false;
     }
+  }
+
+  public static  <T> T findValue(String column, Supplier<T> supplier) {
+    try {
+      return supplier.get();
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "findValue column:" + column + ",message" + e.getMessage());
+    }
+    return null;
   }
 
 }

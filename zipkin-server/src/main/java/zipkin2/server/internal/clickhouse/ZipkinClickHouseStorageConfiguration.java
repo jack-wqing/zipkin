@@ -1,6 +1,6 @@
 package zipkin2.server.internal.clickhouse;
 
-import com.clickhouse.jdbc.ClickHouseDataSource;
+import com.clickhouse.client.api.Client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,7 +14,6 @@ import zipkin2.storage.StorageComponent;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -39,27 +38,31 @@ public class ZipkinClickHouseStorageConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean
-  public ClickHouseDataSource clickHouseDataSource () throws SQLException {
-    ClickHouseDataSource dataSource = new ClickHouseDataSource(clickHouseStorageProperties.getUrl() +
-      "/" + clickHouseStorageProperties.getDatabase(), clickHouseProperties());
-    return dataSource;
+  @ConditionalOnMissingBean()
+  public Client client () throws SQLException {
+    Client.Builder clientBuilder = new Client.Builder()
+      .addEndpoint(clickHouseStorageProperties.getEndpoint())
+      .setUsername(clickHouseStorageProperties.getUsername())
+      .setPassword(clickHouseStorageProperties.getPassword())
+      .compressServerResponse(true)
+      .setDefaultDatabase(clickHouseStorageProperties.getDatabase())
+      .setSocketRcvbuf(1_000_000)
+      .setClientNetworkBufferSize(1_000_000)
+      .setMaxConnections(20);
+    Client client = clientBuilder.build();
+    return client;
   }
 
-  private Properties clickHouseProperties() {
-    Properties properties = new Properties();
-    return properties;
-  }
 
   @Bean
   public StorageComponent storage(Executor executor,
-    ClickHouseDataSource clickHouseDataSource,
+    Client client,
     @Value("${zipkin.storage.strict-trace-id:true}") boolean strictTraceId,
     @Value("${zipkin.storage.search-enabled:true}") boolean searchEnabled,
     @Value("${zipkin.storage.autocomplete-keys:}") List<String> autocompleteKeys) {
     return ClickHouseStorage.newBuilder()
       .executor(executor)
-      .dataSource(clickHouseDataSource)
+      .client(client)
       .spanTable(clickHouseStorageProperties.getSpanTable())
       .traceTable(clickHouseStorageProperties.getTraceTable())
       .namesLookback(clickHouseStorageProperties.getNamesLookback())

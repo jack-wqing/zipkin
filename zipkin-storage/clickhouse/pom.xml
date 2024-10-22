@@ -24,13 +24,13 @@
     <!-- 支持23 clickhouse版本以上 -->
     <dependency>
       <groupId>com.clickhouse</groupId>
-      <artifactId>clickhouse-jdbc</artifactId>
+      <artifactId>client-v2</artifactId>
       <version>0.6.5</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents.client5</groupId>
-      <artifactId>httpclient5</artifactId>
-      <version>5.2.1</version>
+      <groupId>com.clickhouse</groupId>
+      <artifactId>clickhouse-http-client</artifactId>
+      <version>0.6.5</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -46,6 +46,46 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.26.2</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
+    <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <!-- Recommended for JSON parsing -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.17.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.2</version>
+    </dependency>
+    <!-- Popular Alternative to Jackson -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.11.0</version>
+    </dependency>
+    <!-- For parsing DB text formats -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.11.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.17.2</version>
+      <scope>compile</scope>
     </dependency>
 
   </dependencies>

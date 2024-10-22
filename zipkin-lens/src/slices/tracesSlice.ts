@@ -98,7 +98,9 @@ export const loadTrace = createAsyncThunk(
     // So use any type to avoid this.
     const { traces }: TracesState = (thunkApi.getState() as any).traces;
 
-    if (traces[traceId]) {
+    // 需要重新执行trace查询 添加  const flag = false; 跳过
+    const flag = false;
+    if (traces[traceId] && flag) {
       const { rawTrace, skewCorrectedTrace } = traces[traceId];
       let { adjustedTrace } = traces[traceId];
       if (adjustedTrace) {

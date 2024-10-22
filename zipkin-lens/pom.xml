@@ -24,6 +24,7 @@
   </parent>
 
   <artifactId>zipkin-lens</artifactId>
+
   <name>Zipkin Lens</name>
   <description>Repackages Zipkin Lens into a jar so we can use it in Spring Boot</description>
 
@@ -111,12 +112,12 @@
             </goals>
           </execution>
           <execution>
-            <id>npm install</id>
+            <id>npm install --registry=https://mirrors.huaweicloud.com/repository/npm/</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install --registry=https://mirrors.huaweicloud.com/repository/npm/</arguments>
             </configuration>
           </execution>
           <execution>
@@ -223,7 +224,7 @@
                 <phase>none</phase>
               </execution>
               <execution>
-                <id>npm install</id>
+                <id>npm install --registry https://mirrors.huaweicloud.com/repository/npm/</id>
                 <phase>none</phase>
               </execution>
               <execution>
@@ -254,7 +255,7 @@
             </configuration>
             <executions>
               <execution>
-                <id>npm install</id>
+                <id>npm install --registry https://mirrors.huaweicloud.com/repository/npm/</id>
                 <goals>
                   <goal>exec</goal>
                 </goals>
@@ -262,7 +263,7 @@
                 <configuration>
                   <executable>npm</executable>
                   <arguments>
-                    <argument>install</argument>
+                    <argument>install --registry https://mirrors.huaweicloud.com/repository/npm/</argument>
                   </arguments>
                 </configuration>
               </execution>

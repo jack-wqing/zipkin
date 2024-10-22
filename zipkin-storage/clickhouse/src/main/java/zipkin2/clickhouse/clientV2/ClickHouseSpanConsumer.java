@@ -1,4 +1,4 @@
-package zipkin2.clickhouse.spanconsumer;
+package zipkin2.clickhouse.clientV2;
 
 import org.apache.commons.collections4.CollectionUtils;
 import zipkin2.Call;
@@ -13,11 +13,9 @@ import java.util.List;
  */
 
 public class ClickHouseSpanConsumer implements SpanConsumer {
-
-  final SchedulerSpanPersistence schedulerSpanPersistence;
-
-  public ClickHouseSpanConsumer(SchedulerSpanPersistence schedulerSpanPersistence) {
-    this.schedulerSpanPersistence = schedulerSpanPersistence;
+  final SchedulerSpanPersistenceClientV2 schedulerSpanPersistenceClientV2;
+  public ClickHouseSpanConsumer(SchedulerSpanPersistenceClientV2 schedulerSpanPersistenceClientV2) {
+    this.schedulerSpanPersistenceClientV2 = schedulerSpanPersistenceClientV2;
   }
 
   @Override
@@ -26,8 +24,6 @@ public class ClickHouseSpanConsumer implements SpanConsumer {
       return Call.create(null);
     }
     SpansQueueManager.add(spans);
-    //判断数据量进行保存
-    schedulerSpanPersistence.runInsert(false);
     return null;
   }
 

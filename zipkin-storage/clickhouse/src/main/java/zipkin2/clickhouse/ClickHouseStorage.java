@@ -1,12 +1,11 @@
 package zipkin2.clickhouse;
 
-import com.clickhouse.jdbc.ClickHouseConnection;
-import com.clickhouse.jdbc.ClickHouseDataSource;
-import com.clickhouse.jdbc.ClickHouseStatement;
-import zipkin2.Call;
+import com.clickhouse.client.api.Client;
+import com.clickhouse.client.api.data_formats.ClickHouseBinaryFormatReader;
+import com.clickhouse.client.api.query.QueryResponse;
 import zipkin2.CheckResult;
-import zipkin2.clickhouse.spanconsumer.ClickHouseSpanConsumer;
-import zipkin2.clickhouse.spanconsumer.SchedulerSpanPersistence;
+import zipkin2.clickhouse.clientV2.ClickHouseSpanConsumer;
+import zipkin2.clickhouse.clientV2.SchedulerSpanPersistenceClientV2;
 import zipkin2.storage.AutocompleteTags;
 import zipkin2.storage.ServiceAndSpanNames;
 import zipkin2.storage.SpanConsumer;
@@ -15,15 +14,21 @@ import zipkin2.storage.StorageComponent;
 import zipkin2.storage.Traces;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * click 实现得存储机制
  */
 public class ClickHouseStorage extends StorageComponent {
+
+  private static final Logger logger = Logger.getLogger(ClickHouseStorage.class.getName());
 
   public static Builder newBuilder() {
     return new Builder();
@@ -33,7 +38,7 @@ public class ClickHouseStorage extends StorageComponent {
 
     private boolean strictTraceId = true;
     private boolean searchEnabled = true;
-    private ClickHouseDataSource dataSource;
+    private Client client;
     private Executor executor;
     List<String> autocompleteKeys = new ArrayList<>();
 
@@ -65,11 +70,11 @@ public class ClickHouseStorage extends StorageComponent {
       this.autocompleteKeys = keys;
       return this;
     }
-    public Builder dataSource(ClickHouseDataSource dataSource) {
-      if (dataSource == null) {
+    public Builder client(Client client) {
+      if (client == null) {
         throw new NullPointerException("dataSource == null");
       }
-      this.dataSource = dataSource;
+      this.client = client;
       return this;
     }
     public Builder executor(Executor executor) {
@@ -115,40 +120,39 @@ public class ClickHouseStorage extends StorageComponent {
     }
   }
 
-  final ClickHouseDataSource dataSource;
+  final Client client;
   final DataSourceCall.Factory dataSourceCallFactory;
   final boolean strictTraceId;
   final boolean searchEnabled;
   final List<String> autocompleteKeys;
   public String spanTable;
-
   public String traceTable;
   public long namesLookback;
 
-  final SchedulerSpanPersistence schedulerSpanPersistence;
+  final SchedulerSpanPersistenceClientV2 schedulerSpanPersistenceClientV2;
 
   public ClickHouseStorage(Builder builder) {
-    dataSource = builder.dataSource;
-    if (dataSource == null) {
+    client = builder.client;
+    if (client == null) {
       throw new NullPointerException("datasource == null");
     }
     Executor executor = builder.executor;
     if (executor == null) {
       throw new NullPointerException("executor == null");
     }
-    dataSourceCallFactory = new DataSourceCall.Factory(dataSource, executor);
+    dataSourceCallFactory = new DataSourceCall.Factory(client, executor);
     strictTraceId = builder.strictTraceId;
     searchEnabled = builder.searchEnabled;
     autocompleteKeys = builder.autocompleteKeys;
     spanTable = builder.spanTable;
     traceTable = builder.traceTable;
     namesLookback = builder.namesLookback;
-    schedulerSpanPersistence = new SchedulerSpanPersistence(dataSource, spanTable, builder.batchSize, builder.parallelWriteSize, builder.schedulingTime);
-    schedulerSpanPersistence.start();
+    schedulerSpanPersistenceClientV2 = new SchedulerSpanPersistenceClientV2(builder.client, spanTable, builder.batchSize, builder.parallelWriteSize, builder.schedulingTime);
+    schedulerSpanPersistenceClientV2.start();
   }
 
-  public ClickHouseDataSource dataSource() {
-    return dataSource;
+  public Client client() {
+    return client;
   }
   @Override
   public SpanStore spanStore() {
@@ -173,25 +177,29 @@ public class ClickHouseStorage extends StorageComponent {
   }
   @Override
   public SpanConsumer spanConsumer() {
-    return new ClickHouseSpanConsumer(schedulerSpanPersistence);
+    return new ClickHouseSpanConsumer(schedulerSpanPersistenceClientV2);
   }
 
   @Override
   public CheckResult check() {
-    try (ClickHouseConnection connection = dataSource.getConnection();
-      ClickHouseStatement statement = connection.createStatement()) {
+    try (QueryResponse response = client.query(String.format(Constants.CHECK_SQL, spanTable)).get(10, TimeUnit.SECONDS)) {
       //执行一条SQL语句进行判断
-      statement.executeQuery(String.format(Constants.CHECK_SQL, spanTable));
-    } catch (SQLException e) {
-      Call.propagateIfFatal(e);
-      return CheckResult.failed(e);
+      ClickHouseBinaryFormatReader reader = Client.newBinaryFormatReader(response);
+    } catch (ExecutionException e) {
+      logger.log(Level.WARNING, "clickhouse storage check error ExecutionException", e);
+    } catch (InterruptedException e) {
+      logger.log(Level.WARNING, "clickhouse storage check error InterruptedException", e);
+    } catch (TimeoutException e) {
+      logger.log(Level.WARNING, "clickhouse storage check error TimeoutException", e);
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "clickhouse storage check error Exception", e);
     }
     return CheckResult.OK;
   }
 
   @Override
   public String toString() {
-    return "ClickHouseStorage{" + "dataSource=" + dataSource + '}';
+    return "ClickHouseStorage{" + "client=" + client + '}';
   }
 
   @Override
@@ -199,14 +207,9 @@ public class ClickHouseStorage extends StorageComponent {
 
   }
 
-  /** Visible for testing */
+  /** 可以在写清空表的操作，测试使用 */
   void clear() {
-    try (ClickHouseConnection connection = dataSource.getConnection();
-      ClickHouseStatement statement = connection.createStatement()) {
-
-    } catch (SQLException | RuntimeException e) {
-      throw new AssertionError(e);
-    }
+    //
 
   }
 

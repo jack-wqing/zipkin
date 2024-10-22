@@ -1,7 +1,6 @@
 package zipkin2.clickhouse;
 
-import com.clickhouse.jdbc.ClickHouseConnection;
-import com.clickhouse.jdbc.ClickHouseDataSource;
+import com.clickhouse.client.api.Client;
 import zipkin2.Call;
 import zipkin2.Callback;
 
@@ -15,30 +14,26 @@ import java.util.function.Function;
  */
 public class DataSourceCall<V> extends Call.Base<V>{
   public static final class Factory {
-    final ClickHouseDataSource dataSource;
+    final Client client;
     final Executor executor;
 
-    public Factory(ClickHouseDataSource dataSource, Executor executor) {
-      this.dataSource = dataSource;
+    public Factory(Client client, Executor executor) {
+      this.client = client;
       this.executor = executor;
     }
-    <V> DataSourceCall<V> create(Function<ClickHouseConnection, V> queryFunction) {
+    <V> DataSourceCall<V> create(Function<Client, V> queryFunction) {
       return new DataSourceCall<>(this, queryFunction);
     }
   }
   final Factory factory;
-  final Function<ClickHouseConnection, V> queryFunction;
-  public DataSourceCall(Factory factory, Function<ClickHouseConnection, V> queryFunction) {
+  final Function<Client, V> queryFunction;
+  public DataSourceCall(Factory factory, Function<Client, V> queryFunction) {
     this.factory = factory;
     this.queryFunction = queryFunction;
   }
   @Override
   protected V doExecute() throws IOException {
-    try (ClickHouseConnection connection = factory.dataSource.getConnection()) {
-      return queryFunction.apply(connection);
-    } catch (SQLException e) {
-      throw new IOException(e);
-    }
+    return queryFunction.apply(factory.client);
   }
   @Override
   protected void doEnqueue(Callback<V> callback) {

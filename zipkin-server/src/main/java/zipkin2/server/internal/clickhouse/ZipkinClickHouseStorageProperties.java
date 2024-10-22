@@ -7,7 +7,10 @@ import java.io.Serializable;
 @ConfigurationProperties(prefix = "zipkin.storage.clickhouse")
 public class ZipkinClickHouseStorageProperties implements Serializable {
 
-  private String url = "jdbc:ch://localhost:8123";
+  private String endpoint = "http://localhost:8123";
+
+  private String username = "default";
+  private String password = "";
   private String  database = "log";
   private String spanTable = "zipkin_spans";
 
@@ -19,12 +22,29 @@ public class ZipkinClickHouseStorageProperties implements Serializable {
   private int parallelWriteSize = 1;
 
   private int schedulingTime = 1;
-  public String getUrl() {
-    return url;
+
+  public String getEndpoint() {
+    return endpoint;
   }
 
-  public void setUrl(String url) {
-    this.url = url;
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public String getDatabase() {
