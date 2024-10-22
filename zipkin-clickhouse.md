@@ -2,7 +2,11 @@
 ### zipkin-lens
 ```
   1、优化: 在搜索页面,进行trace查询，只会显示当前列表的
-     修改 tracesSlice.ts， 在99行后面添加// 添加条件 new Date().getFullYear() < 1 跳过，重新查询traces，重新执行trace查询
+     修改 tracesSlice.ts， 在99行后面添加// 添加条件
+      const fullYear = new Date().getFullYear();
+      if (traces[traceId] && fullYear < 1) {
+     跳过，重新查询traces，重新执行trace查询
+     修改文件tracesSlice.test.ts.bak，去掉单元测试
 ```
 ### zipkin-storage
 ```
