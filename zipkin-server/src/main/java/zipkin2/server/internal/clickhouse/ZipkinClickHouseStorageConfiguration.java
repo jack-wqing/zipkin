@@ -13,6 +13,7 @@ import zipkin2.clickhouse.ClickHouseStorage;
 import zipkin2.storage.StorageComponent;
 
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -46,6 +47,7 @@ public class ZipkinClickHouseStorageConfiguration {
       .setPassword(clickHouseStorageProperties.getPassword())
       .compressServerResponse(true)
       .setDefaultDatabase(clickHouseStorageProperties.getDatabase())
+      .setSocketTimeout(10, ChronoUnit.SECONDS)
       .setSocketRcvbuf(1_000_000)
       .setClientNetworkBufferSize(1_000_000)
       .setMaxConnections(20);
