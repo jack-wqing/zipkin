@@ -99,7 +99,8 @@ export const loadTrace = createAsyncThunk(
     const { traces }: TracesState = (thunkApi.getState() as any).traces;
 
     // 添加条件 new Date().getFullYear() < 1 跳过，重新查询traces
-    if (traces[traceId] && (new Date().getFullYear() < 1)) {
+    const fullYear = new Date().getFullYear();
+    if (traces[traceId] && fullYear < 1) {
       const { rawTrace, skewCorrectedTrace } = traces[traceId];
       let { adjustedTrace } = traces[traceId];
       if (adjustedTrace) {
