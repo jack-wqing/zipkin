@@ -20,9 +20,9 @@ public class Constants {
 
   public static final String SERVICE_TERM_SQL = "select distinct %s from %s where localEndpointServiceName = '%s' AND time >= '%s' AND time <= '%s'";
 
-  public static final String SPAN_TRACE_ID_SQL = "select * from %s where traceId = '%s'";
+  public static final String SPAN_TRACE_ID_SQL = "select * from %s where traceId = '%s' limit 1000";
 
-  public static final String SPAN_TRACE_IDS_SQL = "select * from %s where traceId in (%s)";
+  public static final String SPAN_TRACE_IDS_SQL = "select * from %s where traceId in (%s) limit 1000";
 
   public static final String SPAN_QUERY_REQUEST_SQL = "select * from %s where  id != ''";
 

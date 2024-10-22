@@ -48,6 +48,7 @@ public class ZipkinClickHouseStorageConfiguration {
       .compressServerResponse(true)
       .setDefaultDatabase(clickHouseStorageProperties.getDatabase())
       .setSocketTimeout(10, ChronoUnit.SECONDS)
+      .setConnectionRequestTimeout(10, ChronoUnit.SECONDS)
       .setSocketRcvbuf(1_000_000)
       .setClientNetworkBufferSize(1_000_000)
       .setMaxConnections(20);
