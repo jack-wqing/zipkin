@@ -1,0 +1,125 @@
+CREATE TABLE log.zipkin_spans
+(
+    `traceId` String,
+    `parentId` String,
+    `id` String,
+    `kind` String,
+    `name` String,
+    `duration` UInt32,
+    `timestamp` UInt64,
+    `timestampMillis` UInt64,
+    `time` DateTime,
+    `serviceName` String,
+    `localEndpoint` Map(String, String),
+    `remoteEndpoint` Map(String, String),
+    `annotations` Map(String, String),
+    `tags` Map(String, String)
+)
+ENGINE = MergeTree
+PARTITION BY toYYYYMMDD(time)
+ORDER BY (time, serviceName)
+TTL time + toIntervalDay(7)
+SETTINGS index_granularity = 8192;
+
+
+分布式表:
+CREATE TABLE log.zipkin_spans_dist
+(
+    `traceId` String,
+    `parentId` String,
+    `id` String,
+    `kind` String,
+    `name` String,
+    `duration` UInt32,
+    `timestamp` UInt64,
+    `timestampMillis` UInt64,
+    `time` DateTime,
+    `serviceName` String,
+    `localEndpoint` Map(String, String),
+    `remoteEndpoint` Map(String, String),
+    `annotations` Map(String, String),
+    `tags` Map(String, String)
+)
+ENGINE = Distributed('cluster_log', 'log', 'zipkin_spans', rand());
+
+trace场景索引:
+CREATE TABLE log.zipkin_spans_trace
+(
+    `traceId` String,
+    `parentId` String,
+    `id` String,
+    `kind` String,
+    `name` String,
+    `duration` UInt32,
+    `timestamp` UInt64,
+    `timestampMillis` UInt64,
+    `time` DateTime,
+    `serviceName` String,
+    `localEndpoint` Map(String, String),
+    `remoteEndpoint` Map(String, String),
+    `annotations` Map(String, String),
+    `tags` Map(String, String)
+)
+ENGINE = MergeTree
+PARTITION BY toYYYYMMDD(time)
+ORDER BY (traceId)
+TTL time + toIntervalDay(7)
+SETTINGS index_granularity = 8192;
+
+物化视图分布式表
+CREATE TABLE log.zipkin_spans_trace_dist
+(
+  `traceId` String,
+  `parentId` String,
+  `id` String,
+  `kind` String,
+  `name` String,
+  `duration` UInt32,
+  `timestamp` UInt64,
+  `timestampMillis` UInt64,
+  `time` DateTime,
+  `serviceName` String,
+  `localEndpoint` Map(String, String),
+  `remoteEndpoint` Map(String, String),
+  `annotations` Map(String, String),
+  `tags` Map(String, String)
+)
+ENGINE = Distributed('cluster_log', 'log', 'zipkin_spans_trace', rand());
+
+
+数据迁移sql
+INSERT INTO log.zipkin_spans SELECT
+    traceId AS traceId,
+    parentId AS parentId,
+    id AS id,
+    kind AS kind,
+    name AS name,
+    duration AS duration,
+    timestamp AS timestamp,
+    timestampMillis AS timestampMillis,
+    time AS time,
+    serviceName AS serviceName,
+    localEndpoint AS localEndpoint,
+    remoteEndpoint AS remoteEndpoint,
+    annotations AS annotations,
+    tags AS tags
+FROM remote('10.100.5.161:9000', 'log', 'zipkin_prod') AS t
+ORDER BY time DESC
+
+创建物化视图
+CREATE MATERIALIZED VIEW log.zipkin_spans_trace_dist_mv TO log.zipkin_spans_trace_dist AS
+SELECT traceId AS traceId,
+       parentId AS parentId,
+       id AS id,
+       kind AS kind,
+       name AS name,
+       duration AS duration,
+       timestamp AS timestamp,
+       timestampMillis AS timestampMillis,
+       time AS time,
+       serviceName AS serviceName,
+       localEndpoint AS localEndpoint,
+       remoteEndpoint AS remoteEndpoint,
+       annotations AS annotations,
+       tags AS tags
+FROM log.zipkin_spans_dist;
