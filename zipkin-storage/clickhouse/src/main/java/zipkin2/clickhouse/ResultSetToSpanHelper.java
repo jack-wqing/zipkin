@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import zipkin2.DependencyLink;
 import zipkin2.Endpoint;
 import zipkin2.Span;
+import zipkin2.clickhouse.util.ConvertUtils;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ public class ResultSetToSpanHelper {
 
   private static final Logger logger = Logger.getLogger(ResultSetToSpanHelper.class.getName());
 
-  public static final List<Span> resultSetToSpan(ClickHouseBinaryFormatReader reader) throws SQLException {
+  public static final List<Span> resultSetToSpan(ClickHouseBinaryFormatReader reader) {
     List<Span> spans = new ArrayList<>();
     while (reader.hasNext()) {
       Map<String, Object> next = reader.next();
@@ -31,164 +32,96 @@ public class ResultSetToSpanHelper {
         continue;
       }
       Span.Builder spanBuilder = Span.newBuilder();
-      String traceId = findValue("traceId", () -> reader.getString("traceId"));
+      String traceId = findValue(Constants.TRADE_ID, () -> reader.getString(Constants.TRADE_ID));
       if (StringUtils.isBlank(traceId)) {
         continue;
       }
-      String parentId = findValue("parentId", () -> reader.getString("parentId"));
-      String id = findValue("id", () -> reader.getString("id"));
-      String kind = findValue("kind", () -> reader.getString("kind"));
-      Long duration = findValue("duration", () -> reader.getLong("duration"));
-      String name = findValue("name", () -> reader.getString("name"));
-      String timestamp = findValue("timestamp", () -> reader.getString("timestamp"));
-      String status = findValue("status", () -> reader.getString("status"));
-      BigInteger timestampMillis = findValue("timestampMillis", () -> reader.getBigInteger("timestampMillis"));
-      String localEndpointIpv4 = findValue("localEndpointIpv4", () -> reader.getString("localEndpointIpv4"));
-      String localEndpointServiceName = findValue("localEndpointServiceName", () -> reader.getString("localEndpointServiceName"));
-      String localEndpointPort = findValue("localEndpointPort", () -> reader.getString("localEndpointPort"));
-      String remoteEndpointIpv4 = findValue("remoteEndpointIpv4", () -> reader.getString("remoteEndpointIpv4"));
-      String remoteEndpointServiceName = findValue("remoteEndpointServiceName", () -> reader.getString("remoteEndpointServiceName"));
-      String remoteEndpointPort = findValue("remoteEndpointPort", () -> reader.getString("remoteEndpointPort"));
-      String tagsRpcMethod = findValue("tagsRpcMethod", () -> reader.getString("tagsRpcMethod"));
-      String tagsRpcService = findValue("tagsRpcService", () -> reader.getString("tagsRpcService"));
-      String tagsAppname = findValue("tagsAppname", () -> reader.getString("tagsAppname"));
-      String tagsComponent = findValue("tagsComponent", () -> reader.getString("tagsComponent"));
-      String tagsHttpUrl = findValue("tagsHttpUrl", () -> reader.getString("tagsHttpUrl"));
-      String tagsHttpMethod = findValue("tagsHttpMethod", () -> reader.getString("tagsHttpMethod"));
-      if (timestampMillis != null) {
-        spanBuilder.putTag("timestampMillis", timestampMillis.toString());
-      }
-      String tagsCatMessageId = findValue("tagsCatMessageId", () -> reader.getString("tagsCatMessageId"));
-      String tagsHttpPath = findValue("tagsHttpPath", () -> reader.getString("tagsHttpPath"));
-      Long tagsHttpRequestSize = findValue("tagsHttpPath", () -> reader.getLong("tagsHttpRequestSize"));
-      Long tagsHttpResponseSize = findValue("tagsHttpResponseSize", () -> reader.getLong("tagsHttpResponseSize"));
-      Long tagsHttpStatusCode = findValue("tagsHttpStatusCode", () -> reader.getLong("tagsHttpStatusCode"));
-      String tagsLocalIpv4 = findValue("tagsLocalIpv4", () -> reader.getString("tagsLocalIpv4"));
-      String tagsPeerIpv4 = findValue("tagsPeerIpv4", () -> reader.getString("tagsPeerIpv4"));
-      String tagsPeerService = findValue("tagsPeerService", () -> reader.getString("tagsPeerService"));
-      Long tagsPeerPort = findValue("tagsPeerPort", () -> reader.getLong("tagsPeerPort"));
-      String tagsPeerHostname = findValue("tagsPeerHostname", () -> reader.getString("tagsPeerHostname"));
-      String tagsPeerIpv6 = findValue("tagsPeerIpv6", () -> reader.getString("tagsPeerIpv6"));
-      Long tagsProcessId = findValue("tagsProcessId", () -> reader.getLong("tagsProcessId"));
-      String tagsSpanKind = findValue("tagsSpanKind", () -> reader.getString("tagsSpanKind"));
-      Long tagsWorkerId = findValue("tagsWorkerId", () -> reader.getLong("tagsWorkerId"));
-      String logFilePath = findValue("logFilePath", () -> reader.getString("logFilePath"));
+      String parentId = findValue(Constants.PARENT_ID, () -> reader.getString(Constants.PARENT_ID));
+      String id = findValue(Constants.ID, () -> reader.getString(Constants.ID));
+      String kind = findValue(Constants.KIND, () -> reader.getString(Constants.KIND));
+      String name = findValue(Constants.NAME, () -> reader.getString(Constants.NAME));
+      Long duration = findValue(Constants.DURATION, () -> reader.getLong(Constants.DURATION));
+      BigInteger timestamp = findValue(Constants.TIMESTAMP, () -> reader.getBigInteger(Constants.TIMESTAMP));
+      Map<String, String> localEndpoint = findValue(Constants.LOCAL_ENDPOINT, () -> reader.readValue(Constants.LOCAL_ENDPOINT));
+      Map<String, String> remoteEndpoint = findValue(Constants.REMOTE_ENDPOINT, () -> reader.readValue(Constants.REMOTE_ENDPOINT));
+      Map<String, String> annotations = findValue(Constants.ANNOTATIONS, () -> reader.readValue(Constants.ANNOTATIONS));
+      Map<String, String> tags = findValue(Constants.TAGS, () -> reader.readValue(Constants.TAGS));
+
       spanBuilder.traceId(traceId);
-      if (parentId != null && !parentId.equals("")) {
+      if(StringUtils.isNotBlank(parentId)) {
         spanBuilder.parentId(parentId);
       }
-      if (id != null && !id.equals("")) {
+      if(StringUtils.isNotBlank(id)) {
         spanBuilder.id(id);
       }
       if (StringUtils.isNotBlank(kind)) {
         spanBuilder.kind(Span.Kind.valueOf(kind));
       }
+      if (StringUtils.isNotBlank(name)) {
+        spanBuilder.name(name);
+      }
       if (duration != null) {
         spanBuilder.duration(duration);
       }
-      spanBuilder.name(name);
-      if (timestamp != null && timestamp.contains(".")) {
-        timestamp = timestamp.substring(0, timestamp.indexOf("."));
-      }
       if (timestamp != null) {
-        spanBuilder.timestamp(Long.parseLong(timestamp));
+        spanBuilder.timestamp(timestamp.longValue());
       }
-      if (StringUtils.isNotBlank(status)) {
-        spanBuilder.putTag("status", status);
-      }
-      Endpoint.Builder localEndpointBuilder = Endpoint.newBuilder();
-      localEndpointBuilder.ip(localEndpointIpv4);
-      localEndpointBuilder.serviceName(localEndpointServiceName);
-      if (localEndpointPort != null && !localEndpointPort.equals("")) {
-        localEndpointBuilder.port(Integer.parseInt(localEndpointPort));
-      }
-      Endpoint.Builder remoteEndpointBuilder = Endpoint.newBuilder();
-      remoteEndpointBuilder.ip(remoteEndpointIpv4);
-      remoteEndpointBuilder.serviceName(remoteEndpointServiceName);
-      if (remoteEndpointPort != null && !remoteEndpointPort.equals("")) {
-        remoteEndpointBuilder.port(Integer.parseInt(remoteEndpointPort));
-      }
-      spanBuilder.localEndpoint(localEndpointBuilder.build());
-      spanBuilder.remoteEndpoint(remoteEndpointBuilder.build());
-      if (StringUtils.isNotBlank(tagsRpcMethod)) {
-        spanBuilder.putTag("rpc.method", tagsRpcMethod);
-      }
-      if (StringUtils.isNotBlank(tagsRpcService)) {
-        spanBuilder.putTag("rpc.service", tagsRpcService);
-      }
-      if (StringUtils.isNotBlank(tagsAppname)) {
-        spanBuilder.putTag("appname", tagsAppname);
-      }
-      if (StringUtils.isNotBlank(tagsComponent)) {
-        spanBuilder.putTag("component", tagsComponent);
-      }
-      if (StringUtils.isNotBlank(tagsHttpUrl)) {
-        spanBuilder.putTag("http.url", tagsHttpUrl);
-      }
-      if (StringUtils.isNotBlank(tagsHttpMethod)) {
-        spanBuilder.putTag("http.method", tagsHttpMethod);
-      }
-      if (StringUtils.isNotBlank(tagsCatMessageId)) {
-        spanBuilder.putTag("CatMessageId", tagsCatMessageId);
-      }
-      if (StringUtils.isNotBlank(tagsHttpPath)) {
-        spanBuilder.putTag("http.path", tagsHttpPath);
-      }
-      if (tagsHttpRequestSize != null && tagsHttpRequestSize != 0) {
-        spanBuilder.putTag("http.request.size", tagsHttpRequestSize.toString());
-      }
-      if (tagsHttpResponseSize != null && tagsHttpResponseSize != 0) {
-        spanBuilder.putTag("http.response.size", tagsHttpResponseSize.toString());
-      }
-      if (tagsHttpStatusCode != null && tagsHttpStatusCode != 0) {
-        spanBuilder.putTag("http.status.code", tagsHttpStatusCode.toString());
-      }
-      if (StringUtils.isNotBlank(tagsLocalIpv4)) {
-        spanBuilder.putTag("local.ipv4", tagsLocalIpv4);
-      }
-      if (StringUtils.isNotBlank(tagsPeerIpv4)) {
-        spanBuilder.putTag("peer.ipv4", tagsPeerIpv4);
-      }
-      if (StringUtils.isNotBlank(tagsPeerService)) {
-        spanBuilder.putTag("peer.service", tagsPeerService);
-      }
-      if (tagsPeerPort != null && tagsPeerPort != 0) {
-        spanBuilder.putTag("peer.port", tagsPeerPort.toString());
-      }
-      if (StringUtils.isNotBlank(tagsPeerHostname)) {
-        spanBuilder.putTag("peer.hostname", tagsPeerHostname);
-      }
-      if (StringUtils.isNotBlank(tagsPeerIpv6)) {
-        spanBuilder.putTag("peer.ipv6", tagsPeerIpv6);
-      }
-      if (tagsProcessId != null && tagsProcessId != 0) {
-        spanBuilder.putTag("process.id", tagsProcessId.toString());
-      }
-      if(StringUtils.isNotBlank(tagsSpanKind)) {
-        spanBuilder.putTag("span.kind", tagsSpanKind);
-      }
-      if (tagsWorkerId != null && tagsWorkerId != 0) {
-        spanBuilder.putTag("worker.id", tagsWorkerId.toString());
-      }
-      if (StringUtils.isNotBlank(logFilePath)) {
-        spanBuilder.putTag("log.file.path", logFilePath);
-      }
+      spanBuilder.localEndpoint(endpoint(localEndpoint));
+      spanBuilder.remoteEndpoint(endpoint(remoteEndpoint));
+      annotations(spanBuilder, annotations);
+      tags(spanBuilder, tags);
       spans.add(spanBuilder.build());
     }
     return spans;
   }
 
+  private static Endpoint endpoint(Map<String, String> endpointMap) {
+    Endpoint.Builder endpointBuilder = Endpoint.newBuilder();
+    if (MapUtils.isEmpty(endpointMap)) {
+      return endpointBuilder.build();
+    }
+    endpointBuilder.serviceName(endpointMap.get(Constants.ENDPOINT_SERVICE_NAME));
+    endpointBuilder.ip(endpointMap.get(Constants.ENDPOINT_IPV4));
+    endpointBuilder.ip(endpointMap.get(Constants.ENDPOINT_IPV6));
+    String port = endpointMap.get(Constants.ENDPOINT_PORT);
+    endpointBuilder.port(ConvertUtils.strToInteger(port));
+    return endpointBuilder.build();
+  }
+
+  private static void annotations(Span.Builder spanBuilder, Map<String, String> annotationsMap ) {
+    if (MapUtils.isEmpty(annotationsMap)) {
+      return;
+    }
+    for (Map.Entry<String, String> entry : annotationsMap.entrySet()) {
+      String timestampValue = entry.getValue();
+      if (StringUtils.isBlank(timestampValue)) {
+        continue;
+      }
+      spanBuilder.addAnnotation(ConvertUtils.strToLong(timestampValue), entry.getKey());
+    }
+  }
+
+  private static void tags(Span.Builder spanBuilder, Map<String, String> tagsMap) {
+    if (MapUtils.isEmpty(tagsMap)) {
+      return;
+    }
+    for (Map.Entry<String, String> entry : tagsMap.entrySet()) {
+      spanBuilder.putTag(entry.getKey(), entry.getValue());
+    }
+  }
+
   public static final List<DependencyLink> resultSetToSpanDependency(ClickHouseBinaryFormatReader reader) throws SQLException {
     List<DependencyLink> linkerList = new ArrayList<>();
-    Map<Pair<String, String>, Long> linkerMap = Maps.newHashMap();
+    Map<Pair<String, String>, Pair<Long, Long>> linkerMap = Maps.newHashMap();
     while (reader.hasNext()) {
       reader.next();
-      String kindStr = reader.getString("kind");
-      String serviceName = reader.getString("localEndpointServiceName");
-      String remoteServiceName = reader.getString("remoteEndpointServiceName");
-      BigInteger count = reader.getBigInteger("count");
-      serviceName = Objects.isNull(serviceName) ? "" : serviceName;
-      remoteServiceName = Objects.isNull(remoteServiceName) ? "" : remoteServiceName;
+      String kindStr = reader.getString(Constants.KIND);
+      String serviceName = reader.getString(Constants.LOCAL_SERVICE_NAME);
+      String remoteServiceName = reader.getString(Constants.REMOTE_SERVICE_NAME);
+      String errorStatus = reader.getString(Constants.TAG_ERROR_STATUS);
+      BigInteger count = reader.getBigInteger(Constants.COUNT);
+      serviceName = Objects.isNull(serviceName) ? Constants.BLANK : serviceName;
+      remoteServiceName = Objects.isNull(remoteServiceName) ? Constants.BLANK : remoteServiceName;
       Span.Kind kind = StringUtils.isBlank(kindStr) ? null:  Span.Kind.valueOf(kindStr);
       if (kind == null) {
         // Treat unknown type of span as a client span if we know both sides
@@ -215,12 +148,16 @@ public class ResultSetToSpanHelper {
           continue;
       }
       Pair<String, String> keyPair = new Pair<>(parent, child);
-      Long sumCount = linkerMap.getOrDefault(keyPair, 0L);
-      linkerMap.put(keyPair, sumCount + count.longValue());
+      Pair<Long, Long> countPair = linkerMap.getOrDefault(keyPair, new Pair<>(0L, 0L));
+      if (StringUtils.equals(errorStatus, Constants.TAG_ERROR_STATUS_ERROR)) {
+        countPair.setValue(countPair.getValue() + count.longValue());
+      } else {
+        countPair.setKey(countPair.getKey() + count.longValue());
+      }
+      linkerMap.put(keyPair, countPair);
     }
-    linkerMap.forEach((k, v) -> {
-      linkerList.add(DependencyLink.newBuilder().parent(k.getKey()).child(k.getValue()).callCount(v).build());
-    });
+    linkerMap.forEach((k, v) -> linkerList.add(DependencyLink.newBuilder().parent(k.getKey()).child(k.getValue())
+      .callCount(v.getKey() + v.getValue()).errorCount(v.getValue()).build()));
     return linkerList;
   }
 
@@ -236,6 +173,14 @@ public class ResultSetToSpanHelper {
 
     public Pair(@NamedArg("key") K key, @NamedArg("value") V value) {
       this.key = key;
+      this.value = value;
+    }
+
+    public void setKey(K key) {
+      this.key = key;
+    }
+
+    public void setValue(V value) {
       this.value = value;
     }
 

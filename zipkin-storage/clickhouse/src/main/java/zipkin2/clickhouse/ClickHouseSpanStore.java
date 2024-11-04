@@ -81,7 +81,7 @@ public class ClickHouseSpanStore implements SpanStore, Traces, ServiceAndSpanNam
       return Call.emptyList();
     }
     DataSourceCall<List<String>> result = dataSourceFactory.create(
-      new SelectServiceSpanName(spanTable, namesLookback, serviceName, "remoteEndpointServiceName"));
+      new SelectServiceSpanName(spanTable, namesLookback, serviceName, false));
     return result;
   }
 
@@ -91,7 +91,7 @@ public class ClickHouseSpanStore implements SpanStore, Traces, ServiceAndSpanNam
       return Call.emptyList();
     }
     DataSourceCall<List<String>> result = dataSourceFactory.create(
-      new SelectServiceSpanName(spanTable, namesLookback, serviceName, "name"));
+      new SelectServiceSpanName(spanTable, namesLookback, serviceName, true));
     return result;
   }
 

@@ -40,7 +40,7 @@ public class SelectAutocompleteValues implements Function<Client, List<String>> 
     long endMillis = System.currentTimeMillis();
     long beginMillis = endMillis - namesLookback;
     Set<String> tagValues = Sets.newHashSet();
-    String sql = String.format(Constants.TAG_VALUE_SQL, term, spanTable,
+    String sql = String.format(Constants.TAG_VALUE_SQL, term, term, spanTable,
       DateFormatUtils.format(new Date(beginMillis), Constants.DATE_FORMAT),
       DateFormatUtils.format(new Date(endMillis), Constants.DATE_FORMAT));
     try (QueryResponse response = client.query(sql).get(10, TimeUnit.SECONDS)) {

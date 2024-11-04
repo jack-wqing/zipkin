@@ -28,8 +28,8 @@ public class SelectSpansByTraceIds implements Function<Client, List<Span>> {
   @Override
   public List<Span> apply(Client client) {
     List<Span> result = Lists.newArrayList();
-    String traceIdsStr = traceIds.stream().filter(StringUtils::isNotBlank).map(traceId -> "'" + traceId + "'")
-      .collect(Collectors.joining(","));
+    String traceIdsStr = traceIds.stream().filter(StringUtils::isNotBlank).map(traceId -> Constants.SINGLE_QUOTA + traceId + Constants.SINGLE_QUOTA)
+      .collect(Collectors.joining(Constants.COMMA));
     try (QueryResponse response = client.query(String.format(Constants.SPAN_TRACE_IDS_SQL, traceTable, traceIdsStr)).get(10, TimeUnit.SECONDS)) {
       ClickHouseBinaryFormatReader reader = client.newBinaryFormatReader(response);
       result = ResultSetToSpanHelper.resultSetToSpan(reader);

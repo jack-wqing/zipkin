@@ -36,7 +36,7 @@ public class ClickHouseAggregateDependencies implements Function<Client, List<De
     String sql = String.format(Constants.DEPENDENCY_SQL, spanTable,
       DateFormatUtils.format(new Date(endTs - lookback), Constants.DATE_FORMAT),
       DateFormatUtils.format(new Date(endTs), Constants.DATE_FORMAT)) + Constants.DEPENDENCY_SQL_SUFFIX;
-    try (QueryResponse response = client.query(sql).get(10, TimeUnit.SECONDS)) {
+    try (QueryResponse response = client.query(sql).get(20, TimeUnit.SECONDS)) {
       ClickHouseBinaryFormatReader reader = client.newBinaryFormatReader(response);
       List<DependencyLink> linkerList = ResultSetToSpanHelper.resultSetToSpanDependency(reader);
       return linkerList;

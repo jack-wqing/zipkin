@@ -31,7 +31,7 @@ public class ConsumerSpanTask implements Runnable{
   final int schedulingTime;
   private volatile long lastSaveMills = System.currentTimeMillis();
   private volatile StringBuilder data = new StringBuilder();
-  private volatile AtomicInteger count =  new AtomicInteger(0);
+  private AtomicInteger count =  new AtomicInteger(0);
 
   public ConsumerSpanTask(Client client, String spanTable, int batchSize, int schedulingTime) {
     this.client = client;

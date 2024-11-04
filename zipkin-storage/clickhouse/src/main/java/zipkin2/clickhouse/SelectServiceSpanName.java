@@ -28,13 +28,15 @@ public class SelectServiceSpanName implements Function<Client, List<String>> {
   private final String spanTable;
   private long namesLookback;
   private String serviceName;
-  private String term;
+  private boolean span;
 
-  public SelectServiceSpanName(String spanTable, long namesLookback, String serviceName, String term) {
+
+
+  public SelectServiceSpanName(String spanTable, long namesLookback, String serviceName, boolean span) {
     this.spanTable = spanTable;
     this.namesLookback = namesLookback;
     this.serviceName = serviceName;
-    this.term = term;
+    this.span = span;
   }
 
   @Override
@@ -42,14 +44,17 @@ public class SelectServiceSpanName implements Function<Client, List<String>> {
     long endMillis = System.currentTimeMillis();
     long beginMillis = endMillis - namesLookback;
     Set<String> serviceNames = Sets.newHashSet();
-    String sql = String.format(Constants.SERVICE_TERM_SQL, term, spanTable, serviceName,
+    String sql = span ? String.format(Constants.SPAN_NAME_SQL, spanTable, serviceName,
+      DateFormatUtils.format(new Date(beginMillis), Constants.DATE_FORMAT),
+      DateFormatUtils.format(new Date(endMillis), Constants.DATE_FORMAT))
+      : String.format(Constants.REMOTE_SERVICE_SQL, spanTable, serviceName,
       DateFormatUtils.format(new Date(beginMillis), Constants.DATE_FORMAT),
       DateFormatUtils.format(new Date(endMillis), Constants.DATE_FORMAT));
     try (QueryResponse response = client.query(sql).get(10, TimeUnit.SECONDS)) {
       ClickHouseBinaryFormatReader reader = client.newBinaryFormatReader(response);
       while (reader.hasNext()) {
         reader.next();
-        String serviceName = reader.getString(term);
+        String serviceName = reader.getString(span ? Constants.NAME : Constants.SERVICE_NAME);
         if (StringUtils.isNotBlank(serviceName)) {
           serviceNames.add(serviceName);
         }

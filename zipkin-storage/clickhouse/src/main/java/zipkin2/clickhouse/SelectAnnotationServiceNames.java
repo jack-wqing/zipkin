@@ -43,7 +43,7 @@ public class SelectAnnotationServiceNames implements Function<Client, List<Strin
       ClickHouseBinaryFormatReader reader = client.newBinaryFormatReader(response);
       while (reader.hasNext()) {
         reader.next();
-        String serviceName = reader.getString("localEndpointServiceName");
+        String serviceName = reader.getString(Constants.SERVICE_NAME);
         if (StringUtils.isNotBlank(serviceName)) {
           serviceNames.add(serviceName);
         }
