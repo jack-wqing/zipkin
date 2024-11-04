@@ -26,3 +26,10 @@
       parallelWriteSize: ${CH_PARALLEL_WRITE_SIZE:2}  # 并行写入的线程
       schedulingTime: ${CH_SCHEDULING_TIME:10} # 如果到达这个时间会，进行写入；而不需要等到batchSize指定的数量
 ```
+
+###  注意点:
+```
+  1、配置文件zipkin2.server.internal.ZipkinHttpCollector: 'DEBUG' 该类配置路径错误
+  2、es进行保存操作，磁盘不够的问题: https://blog.csdn.net/gmaaa123/article/details/129258648
+
+```

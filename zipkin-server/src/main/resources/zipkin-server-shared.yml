@@ -92,7 +92,7 @@ zipkin:
   storage:
     strict-trace-id: ${STRICT_TRACE_ID:true}
     search-enabled: ${SEARCH_ENABLED:true}
-    autocomplete-keys: ${AUTOCOMPLETE_KEYS:tagsAppname,tagsHttpPath,tagsRpcService}
+    autocomplete-keys: ${AUTOCOMPLETE_KEYS:}
     autocomplete-ttl: ${AUTOCOMPLETE_TTL:3600000}
     autocomplete-cardinality: 20000
     type: ${STORAGE_TYPE:elasticsearch}
@@ -287,7 +287,7 @@ logging:
 #     # investigate /api/v2/dependencies
 #     zipkin2.internal.DependencyLinker: 'DEBUG'
 #     # log reason behind http collector dropped messages
-#     zipkin2.server.ZipkinHttpCollector: 'DEBUG'
+    zipkin2.server.internal.ZipkinHttpCollector: 'DEBUG'
 #     zipkin2.collector.kafka.KafkaCollector: 'DEBUG'
 #     zipkin2.collector.rabbitmq.RabbitMQCollector: 'DEBUG'
 #     zipkin2.collector.scribe.ScribeCollector: 'DEBUG'
